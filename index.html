@@ -20,7 +20,8 @@
         .total-value { font-size: 22px; font-weight: bold; color: var(--green); }
         .alert-box { background: rgba(255, 68, 68, 0.1); border: 1px solid var(--red); color: var(--red); padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px; font-weight: bold; text-align: center; line-height: 1.4; }
         .btn-nova { background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
-        .btn-solicitar { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); width: 100%; padding: 8px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; }
+        .btn-solicitar { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); width: 100%; padding: 8px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; transition: 0.3s; }
+        .btn-solicitar:hover { background: var(--yellow); color: black; }
         #adminPanel { background: #252525; border: 1px dashed var(--orange); padding: 15px; border-radius: 8px; margin: 15px 0; }
         footer { position: fixed; bottom: 10px; right: 20px; opacity: 0.3; cursor: pointer; font-size: 20px; }
     </style>
@@ -29,7 +30,7 @@
 
 <div class="dashboard">
     <div class="module" id="mod1">
-        <h2>1. Identificação <button class="btn-nova" onclick="location.reload()">🔄 Nova Consulta</button></h2>
+        <h2>1. Identificação <button class="btn-nova" onclick="novaConsulta()">🔄 Nova Consulta</button></h2>
         <label>CNPJ do Prestador</label>
         <div style="display: flex; gap: 10px;">
             <input type="text" id="cnpjInput" placeholder="00.000.000/0000-00">
@@ -55,7 +56,7 @@
             <option value="">Carregando...</option>
         </select>
 
-        <button class="btn-solicitar" onclick="solicitarCodigo()">Não achou o código? Solicitar inclusão</button>
+        <button class="btn-solicitar" onclick="solicitarCodigo()">Não achou o código? Clique aqui para solicitar</button>
 
         <div style="margin-top: 20px;">
             <div class="sim-row"><span>ISS Retido</span><span id="stISS" class="tax-status status-nao">Não</span></div>
@@ -121,12 +122,14 @@
 
     function buscarPrestador() {
         const cnpj = document.getElementById('cnpjInput').value.replace(/\D/g, '');
+        if(cnpj.length !== 14) return alert("CNPJ Inválido");
         const s = document.createElement('script');
         s.src = `https://receitaws.com.br/v1/cnpj/${cnpj}?callback=cbPrest`;
         document.body.appendChild(s);
     }
 
     function cbPrest(d) {
+        if(d.status === "ERROR") return alert("CNPJ não encontrado");
         document.getElementById('resRazao').innerText = d.nome;
         regimePrestador = (d.simples && d.simples.optante) ? "SIMPLES" : "NORMAL";
         document.getElementById('resRegime').innerText = `REGIME: ${regimePrestador}`;
@@ -166,6 +169,7 @@
         let vINSS = (r.inss > 0) ? vBruto * (r.inss/100) : 0;
         let vIR = (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0) ? vBruto * (r.ir/100) : 0;
         let vPIS = 0, vCOFINS = 0, vCSLL = 0, vPCC = 0;
+        
         if (regimePrestador !== "SIMPLES" && r.pcc > 0) {
             vPIS = vBruto * 0.0065; vCOFINS = vBruto * 0.03; vCSLL = vBruto * 0.01; vPCC = vPIS + vCOFINS + vCSLL;
         }
@@ -181,9 +185,33 @@
         document.getElementById('resSim').classList.remove('hidden');
     }
 
+    // NOVA FUNÇÃO DO WHATSAPP CONFORME SOLICITADO
     function solicitarCodigo() {
-        const c = prompt("Qual código deseja incluir?");
-        if(c) alert("Solicitação do código " + c + " enviada!");
+        const nome = prompt("Qual o seu nome?");
+        if (!nome) return;
+
+        const municipio = prompt("Qual o município do prestador?");
+        if (!municipio) return;
+
+        const cod = prompt("Qual código de serviço deseja incluir?");
+        if (!cod) return;
+
+        // --- INSIRA SEU WHATSAPP ABAIXO ---
+        const seuWhatsapp = "5511911224407"; 
+
+        const msg = `Olá! Gostaria de solicitar a inclusão de um código de serviço.%0A%0A` +
+                    `*Solicitante:* ${nome}%0A` +
+                    `*Município:* ${municipio}%0A` +
+                    `*Código:* ${cod}`;
+
+        window.open(`https://api.whatsapp.com/send?phone=${seuWhatsapp}&text=${msg}`, '_blank');
+    }
+
+    // LIMPAR TUDO PARA NOVA CONSULTA
+    function novaConsulta() {
+        if(confirm("Deseja limpar todos os campos para uma nova consulta?")) {
+            location.reload();
+        }
     }
 
     function fmt(v) { return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
