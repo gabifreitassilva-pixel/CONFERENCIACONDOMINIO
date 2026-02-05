@@ -82,10 +82,18 @@
     <div class="module locked" id="mod3">
         <h2>3. Simulação Financeira</h2>
         <input type="number" id="vTotal" placeholder="Valor Bruto da Nota" oninput="calcularTudo()">
+        
         <div id="areaISS" class="hidden" style="margin-top:10px; padding:10px; border:1px solid var(--green); border-radius:4px;">
             <label style="color:var(--green); margin:0;">Alíquota ISS (%) Manual</label>
             <input type="number" id="aliqISS" value="5.00" step="0.01" oninput="calcularTudo()">
         </div>
+
+        <div id="areaAbatimento" class="hidden" style="margin-top:10px; padding:10px; border:1px solid var(--yellow); border-radius:4px; background: rgba(255, 204, 0, 0.05);">
+            <label style="color:var(--yellow); margin:0;">Dedução (Materiais/Equip.)</label>
+            <input type="number" id="vDeducao" placeholder="0,00" oninput="calcularTudo()">
+            <div id="infoBase" style="font-size: 10px; margin-top: 5px; color: #aaa;"></div>
+        </div>
+
         <div id="resSim" class="hidden" style="margin-top:20px;">
             <div class="sim-row"><span>ISS</span><span id="valISS">R$ 0,00</span></div>
             <div class="sim-row"><span>INSS</span><span id="valINSS">R$ 0,00</span></div>
@@ -139,17 +147,22 @@
     }
 
     function processarRegras() {
-        const r = REGRAS[document.getElementById('fedCodeSelect').value];
+        const cod = document.getElementById('fedCodeSelect').value;
+        const r = REGRAS[cod];
         if (!r) return;
 
         setSt('stISS', r.iss === "S");
-        // REGRA DE OURO: Condomínio ou Simples Nacional NÃO retém IR
         const retemIR = (tomador !== "CONDOMINIO" && regimePrestador !== "SIMPLES" && r.ir > 0);
         setSt('stIRRF', retemIR);
         setSt('stPCC', (regimePrestador !== "SIMPLES" && r.pcc > 0));
         setSt('stINSS', r.inss > 0);
 
         document.getElementById('areaISS').className = (r.iss === "S") ? "" : "hidden";
+        
+        // REGRA DE EXIBIÇÃO DA DEDUÇÃO: Apenas códigos autorizados
+        const permitidos = ["07.02", "07.05", "07.10", "07.11", "11.02", "14.01"];
+        document.getElementById('areaAbatimento').className = permitidos.includes(cod) ? "" : "hidden";
+        
         calcularTudo();
     }
 
@@ -161,11 +174,23 @@
 
     function calcularTudo() {
         const vBruto = parseFloat(document.getElementById('vTotal').value) || 0;
-        const r = REGRAS[document.getElementById('fedCodeSelect').value];
+        const vDed = parseFloat(document.getElementById('vDeducao').value) || 0;
+        const cod = document.getElementById('fedCodeSelect').value;
+        const r = REGRAS[cod];
         if (vBruto <= 0 || !r) return;
 
+        // Base INSS = Bruto - Dedução (Se o código permitir dedução)
+        const permitidos = ["07.02", "07.05", "07.10", "07.11", "11.02", "14.01"];
+        let baseINSS = (permitidos.includes(cod)) ? Math.max(0, vBruto - vDed) : vBruto;
+        
+        if (r.inss > 0 && permitidos.includes(cod)) {
+            document.getElementById('infoBase').innerText = "Base de Cálculo INSS: " + fmt(baseINSS);
+        } else {
+            document.getElementById('infoBase').innerText = "";
+        }
+
         let vISS = (r.iss === "S") ? vBruto * (parseFloat(document.getElementById('aliqISS').value)/100) : 0;
-        let vINSS = (r.inss > 0) ? vBruto * (r.inss/100) : 0;
+        let vINSS = (r.inss > 0) ? baseINSS * (r.inss/100) : 0;
         let vIR = (tomador !== "CONDOMINIO" && regimePrestador !== "SIMPLES" && r.ir > 0) ? vBruto * (r.ir/100) : 0;
         
         let vPIS = 0, vCOFINS = 0, vCSLL = 0, vPCC = 0;
