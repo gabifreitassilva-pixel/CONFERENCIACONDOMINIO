@@ -47,42 +47,58 @@
     </div>
 
     <div class="module locked" id="mod2">
-        <h2>2. Regras e Alíquotas</h2>
+        <h2>2. Regras de Retenção</h2>
         <label>Código de Serviço</label>
         <select id="fedCodeSelect" onchange="processarRegras()">
             <option value="">Carregando...</option>
         </select>
 
-        <div id="areaISS" class="hidden" style="margin-top:15px; padding:10px; border:1px solid #444; border-radius:6px;">
-            <label style="color:var(--green)">Alíquota ISS Manual (%)</label>
-            <input type="number" id="aliqISS" value="5.00" step="0.01" oninput="calcularTudo()">
+        <div style="margin-top: 20px;">
+            <div class="sim-row"><span>ISS Retido</span><span id="stISS" class="tax-status status-nao">Não</span></div>
+            <div class="sim-row"><span>IRRF Retido</span><span id="stIRRF" class="tax-status status-nao">Não</span></div>
+            <div class="sim-row"><span>PCC Retido (4,65%)</span><span id="stPCC" class="tax-status status-nao">Não</span></div>
+            <div class="sim-row"><span>INSS Retido</span><span id="stINSS" class="tax-status status-nao">Não</span></div>
         </div>
 
         <div id="adminPanel" class="hidden">
-            <input type="text" id="newCod" placeholder="Cód: 7.02">
-            <input type="text" id="newDesc" placeholder="Descrição">
-            <button onclick="salvarLocal()" style="background:var(--green); color:black; width:100%; margin-top:5px; padding:5px;">GERAR JSON</button>
-            <button onclick="copiarTexto()" style="background:white; color:black; width:100%; margin-top:5px; padding:5px;">COPIAR JSON</button>
-            <textarea id="outputNuvem" class="hidden"></textarea>
+            <h4 style="color:var(--green); font-size:11px; margin:0 0 10px 0;">🛠 MODO CRIADOR</h4>
+            <input type="text" id="newCod" placeholder="Cód: 7.02" style="margin-bottom:5px;">
+            <input type="text" id="newDesc" placeholder="Descrição" style="margin-bottom:5px;">
+            <div style="display: flex; gap: 10px; margin-top: 10px; font-size: 10px;">
+                <label><input type="checkbox" id="flagISS"> ISS</label>
+                <label><input type="checkbox" id="flagINSS"> INSS</label>
+                <label><input type="checkbox" id="flagPCC"> PCC</label>
+                <label><input type="checkbox" id="flagIR"> IR</label>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button onclick="salvarLocal()" style="flex: 1; background:var(--green); color:black; font-weight:bold; border:none; padding:8px; border-radius:4px; cursor:pointer;">GERAR JSON</button>
+                <button onclick="copiarTexto()" style="flex: 1; background:var(--white); color:black; font-weight:bold; border:none; padding:8px; border-radius:4px; cursor:pointer;">COPIAR JSON</button>
+            </div>
+            <textarea id="outputNuvem" class="hidden" style="width:100%; margin-top:10px; height:60px; font-size:10px; background:#000; color:var(--green); font-family:monospace;"></textarea>
         </div>
     </div>
 
     <div class="module locked" id="mod3">
-        <h2>3. Retenções e Simulação</h2>
+        <h2>3. Simulação Financeira</h2>
         <label>Valor Bruto da Nota (R$)</label>
         <input type="number" id="vTotal" placeholder="0,00" oninput="calcularTudo()">
 
+        <div id="areaISS" class="hidden" style="margin-top:15px; padding:10px; border:1px solid var(--green); border-radius:6px; background: rgba(0, 255, 136, 0.05);">
+            <label style="color:var(--green); margin-top: 0;">Alíquota ISS (%) - Preenchimento Manual</label>
+            <input type="number" id="aliqISS" value="5.00" step="0.01" oninput="calcularTudo()">
+        </div>
+
         <div id="resSim" class="hidden" style="margin-top:20px;">
-            <h4 style="font-size:11px; color:var(--orange);">RETENÇÕES</h4>
+            <h4 style="font-size:11px; color:var(--orange); margin-bottom: 5px;">RETENÇÕES DETALHADAS</h4>
             <div class="sim-row"><span>ISS</span><span id="valISS">R$ 0,00</span></div>
             <div class="sim-row"><span>INSS</span><span id="valINSS">R$ 0,00</span></div>
             <div class="sim-row"><span>IR</span><span id="valIR">R$ 0,00</span></div>
-            <div class="sim-row"><span>PIS</span><span id="valPIS">R$ 0,00</span></div>
-            <div class="sim-row"><span>COFINS</span><span id="valCOFINS">R$ 0,00</span></div>
-            <div class="sim-row"><span>CSLL</span><span id="valCSLL">R$ 0,00</span></div>
-            <div class="sim-row" style="color:var(--yellow); font-weight:bold;"><span>TOTAL PCC</span><span id="valPCC">R$ 0,00</span></div>
+            <div class="sim-row"><span>PIS (0,65%)</span><span id="valPIS">R$ 0,00</span></div>
+            <div class="sim-row"><span>COFINS (3,00%)</span><span id="valCOFINS">R$ 0,00</span></div>
+            <div class="sim-row"><span>CSLL (1,00%)</span><span id="valCSLL">R$ 0,00</span></div>
+            <div class="sim-row" style="color:var(--yellow); font-weight:bold; border-bottom: 2px solid var(--yellow)"><span>TOTAL PCC (4,65%)</span><span id="valPCC">R$ 0,00</span></div>
             
-            <div class="sim-row" style="margin-top:15px; border-top: 2px solid var(--green); padding-top:15px;">
+            <div class="sim-row" style="margin-top:15px; padding-top:10px;">
                 <span style="color:var(--green); font-weight:bold;">VALOR LÍQUIDO A PAGAR</span>
                 <span id="vLiquido" class="total-value">R$ 0,00</span>
             </div>
@@ -97,7 +113,7 @@
 <footer onclick="ativarAdmin()">⚙️</footer>
 
 <script>
-    const LINK_NUVEM = "https://gist.githubusercontent.com/gabifreitassilva-pixel/969b06493ae7642340b3ba741e18959a/raw/regras.json"; 
+    const LINK_NUVEM = "https://gist.github.com/gabifreitassilva-pixel/969b06493ae7642340b3ba741e18959a.js"></script>"; 
 
     let REGRAS = {};
     let regimePrestador = "";
@@ -146,9 +162,22 @@
         if (!REGRAS[cod]) return;
         const r = REGRAS[cod];
 
-        // Habilita alíquota ISS manual se houver retenção prevista
+        // Módulo 2 - Restaurado Status SIM/NÃO
+        setSt('stISS', r.iss === "S");
+        setSt('stIRRF', (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0));
+        setSt('stPCC', (regimePrestador !== "SIMPLES" && r.pcc > 0));
+        setSt('stINSS', r.inss > 0);
+
+        // Módulo 3 - Habilita alíquota ISS Manual apenas se houver retenção
         document.getElementById('areaISS').className = (r.iss === "S") ? "" : "hidden";
+        
         calcularTudo();
+    }
+
+    function setSt(id, v) {
+        const e = document.getElementById(id);
+        e.innerText = v ? "SIM" : "NÃO";
+        e.className = "tax-status " + (v ? "status-sim" : "status-nao");
     }
 
     function calcularTudo() {
@@ -164,7 +193,7 @@
         const r = REGRAS[cod];
         let totalRetencoes = 0;
 
-        // ISS MANUAL
+        // ISS MANUAL NO MÓDULO 3
         let vISS = 0;
         if (r.iss === "S") {
             const aliqManual = parseFloat(document.getElementById('aliqISS').value) || 0;
@@ -206,14 +235,27 @@
     function ativarAdmin() { if(prompt("Senha:") === "admin123") document.getElementById('adminPanel').classList.remove('hidden'); }
     
     function salvarLocal() {
-        // ... (lógica de salvar omitida para brevidade, mas mantida no arquivo final)
+        const c = document.getElementById('newCod').value, d = document.getElementById('newDesc').value;
+        if(!c || !d) return alert("Preencha!");
+        REGRAS[c] = {
+            iss: document.getElementById('flagISS').checked ? "S" : "N",
+            ir: document.getElementById('flagIR').checked ? 1.5 : 0,
+            pcc: document.getElementById('flagPCC').checked ? 4.65 : 0,
+            inss: document.getElementById('flagINSS').checked ? 11 : 0,
+            desc: d
+        };
+        const out = document.getElementById('outputNuvem');
+        out.value = JSON.stringify(REGRAS, null, 2);
+        out.classList.remove('hidden');
+        alert("JSON Gerado! Clique em COPIAR JSON.");
+        inicializar();
     }
 
     function copiarTexto() {
         const area = document.getElementById('outputNuvem');
         area.select();
         navigator.clipboard.writeText(area.value);
-        alert("Copiado!");
+        alert("Copiado com sucesso! Agora cole no seu Gist.");
     }
 
     inicializar();
