@@ -113,7 +113,8 @@
 <footer onclick="ativarAdmin()">⚙️</footer>
 
 <script>
-    const LINK_NUVEM ="https://gist.github.com/gabifreitassilva-pixel/969b06493ae7642340b3ba741e18959a.json";
+    // Link Raw configurado corretamente
+    const LINK_NUVEM = "https://gist.githubusercontent.com/gabifreitassilva-pixel/969b06493ae7642340b3ba741e18959a/raw/regras.json"; 
 
     let REGRAS = {};
     let regimePrestador = "";
@@ -162,13 +163,13 @@
         if (!REGRAS[cod]) return;
         const r = REGRAS[cod];
 
-        // Módulo 2 - Restaurado Status SIM/NÃO
+        // Módulo 2 - Status restaurado
         setSt('stISS', r.iss === "S");
         setSt('stIRRF', (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0));
         setSt('stPCC', (regimePrestador !== "SIMPLES" && r.pcc > 0));
         setSt('stINSS', r.inss > 0);
 
-        // Módulo 3 - Habilita alíquota ISS Manual apenas se houver retenção
+        // Módulo 3 - Exibe campo de Alíquota ISS se houver retenção
         document.getElementById('areaISS').className = (r.iss === "S") ? "" : "hidden";
         
         calcularTudo();
@@ -193,7 +194,7 @@
         const r = REGRAS[cod];
         let totalRetencoes = 0;
 
-        // ISS MANUAL NO MÓDULO 3
+        // ISS MANUAL
         let vISS = 0;
         if (r.iss === "S") {
             const aliqManual = parseFloat(document.getElementById('aliqISS').value) || 0;
@@ -262,4 +263,3 @@
 </script>
 </body>
 </html>
-
