@@ -13,17 +13,14 @@
         label { display: block; color: var(--orange); font-weight: bold; font-size: 11px; text-transform: uppercase; margin: 15px 0 5px 0; }
         select, input { width: 100%; padding: 12px; background: #121212; border: 1px solid #444; color: white; border-radius: 6px; box-sizing: border-box; font-size: 14px; outline: none; }
         .btn-reset { background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; text-transform: uppercase; }
-        .btn-whatsapp { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 10px; background: rgba(37, 211, 102, 0.1); color: #25d366; border: 1px solid #25d366; padding: 10px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; transition: all 0.3s; cursor: pointer; }
         .tax-status { font-weight: bold; text-transform: uppercase; padding: 3px 6px; border-radius: 4px; font-size: 10px; }
         .status-sim { color: var(--green); border: 1px solid var(--green); }
         .status-nao { color: var(--red); border: 1px solid var(--red); }
         .hidden { display: none; }
         .sim-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #2a2a2a; font-size: 14px; }
         .total-value { font-size: 22px; font-weight: bold; color: var(--green); }
+        .detail-row { font-size: 12px; color: #aaa; padding: 4px 0; display: flex; justify-content: space-between; }
         #adminPanel { background: #252525; border: 1px dashed var(--orange); padding: 15px; border-radius: 8px; margin: 15px 0; }
-        .check-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .check-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-        .check-item input { width: auto; }
         footer { position: fixed; bottom: 10px; right: 20px; opacity: 0.3; cursor: pointer; font-size: 20px; }
     </style>
 </head>
@@ -38,58 +35,59 @@
             <button onclick="buscarPrestador()" style="width: auto; padding: 0 20px; background: var(--orange); border:none; border-radius:6px; color:white; cursor:pointer; font-weight:bold;">Buscar</button>
         </div>
         <div id="resPrestador" style="display:none; margin-top:15px; padding:10px; background:#252525; border-radius:8px;">
-            <div style="margin-bottom:5px;"><small style="color:var(--orange)">RAZÃO SOCIAL:</small><br><span id="resRazao"></span></div>
-            <div style="margin-bottom:5px;"><small style="color:var(--orange)">REGIME:</small><br><span id="resRegime"></span></div>
-            <div><small style="color:var(--orange)">LOCALIDADE:</small><br><span id="resLocal"></span></div>
+            <div id="resRazao"></div>
+            <div id="resRegime" style="font-weight:bold; color:var(--yellow)"></div>
+            <div id="resLocal"></div>
         </div>
-        <label style="margin-top: 20px;">Tomador</label>
+        <label>Tomador</label>
         <select id="tipoTomador" onchange="validarFluxo()">
-            <option value="">-- Selecione o Tomador --</option>
-            <option value="PJ">Pessoa Jurídica (Empresa)</option>
-            <option value="CONDOMINIO">Condomínio Edifício</option>
+            <option value="">-- Selecione --</option>
+            <option value="PJ">Pessoa Jurídica</option>
+            <option value="CONDOMINIO">Condomínio</option>
         </select>
     </div>
 
     <div class="module locked" id="mod2">
-        <h2>2. Regras de Retenção</h2>
+        <h2>2. Regras</h2>
         <label>Código de Serviço</label>
         <select id="fedCodeSelect" onchange="processarRegras()">
-            <option value="">Carregando base...</option>
+            <option value="">Carregando...</option>
         </select>
 
         <div id="adminPanel" class="hidden">
-            <h4 style="color:var(--green); font-size:11px; margin:0 0 10px 0;">🛠 MODO CRIADOR</h4>
-            <input type="text" id="newCod" placeholder="Cód: 7.02" style="margin-bottom:5px;">
-            <input type="text" id="newDesc" placeholder="Descrição" style="margin-bottom:5px;">
-            <div class="check-group">
-                <div class="check-item"><input type="checkbox" id="flagISS"> ISS</div>
-                <div class="check-item"><input type="checkbox" id="flagINSS"> INSS</div>
-                <div class="check-item"><input type="checkbox" id="flagPCC"> PCC</div>
-                <div class="check-item"><input type="checkbox" id="flagIR"> IR</div>
+            <input type="text" id="newCod" placeholder="Cód: 7.02">
+            <input type="text" id="newDesc" placeholder="Descrição">
+            <div style="display:flex; gap:10px; margin-top:5px;">
+                <label><input type="checkbox" id="flagISS"> ISS</label>
+                <label><input type="checkbox" id="flagINSS"> INSS</label>
+                <label><input type="checkbox" id="flagPCC"> PCC</label>
+                <label><input type="checkbox" id="flagIR"> IR</label>
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button class="btn-reset" onclick="salvarLocal()" style="flex: 1; background:var(--green); color:black; font-weight:bold; height: 35px;">GERAR JSON</button>
-                <button class="btn-reset" onclick="copiarTexto()" style="flex: 1; background:var(--white); color:black; font-weight:bold; height: 35px;">COPIAR JSON</button>
-            </div>
-            <textarea id="outputNuvem" class="hidden" style="width:100%; margin-top:10px; height:60px; font-size:10px; background:#000; color:var(--green); font-family:monospace;"></textarea>
+            <button onclick="salvarLocal()" style="background:var(--green); color:black; width:100%; margin-top:5px; padding:5px;">GERAR JSON</button>
+            <button onclick="copiarTexto()" style="background:white; color:black; width:100%; margin-top:5px; padding:5px;">COPIAR JSON</button>
+            <textarea id="outputNuvem" class="hidden"></textarea>
         </div>
-        
-        <button onclick="solicitarCodigo()" class="btn-whatsapp">💬 Solicitar novo código</button>
 
-        <div style="margin-top: 20px;">
-            <div class="sim-row"><span>ISS Retido</span><span id="stISS" class="tax-status status-nao">Não</span></div>
-            <div class="sim-row"><span>IRRF Retido</span><span id="stIRRF" class="tax-status status-nao">Não</span></div>
-            <div class="sim-row"><span>PCC Retido (4,65%)</span><span id="stPCC" class="tax-status status-nao">Não</span></div>
-            <div class="sim-row"><span>INSS Retido</span><span id="stINSS" class="tax-status status-nao">Não</span></div>
+        <div style="margin-top:20px;">
+            <div class="sim-row"><span>ISS</span><span id="stISS" class="tax-status status-nao">Não</span></div>
+            <div class="sim-row"><span>IRRF</span><span id="stIRRF" class="tax-status status-nao">Não</span></div>
+            <div class="sim-row"><span>PCC (4,65%)</span><span id="stPCC" class="tax-status status-nao">Não</span></div>
+            <div class="sim-row"><span>INSS</span><span id="stINSS" class="tax-status status-nao">Não</span></div>
         </div>
     </div>
 
     <div class="module locked" id="mod3">
-        <h2>3. Simulação de Valores</h2>
-        <label>Valor Bruto da Nota Fiscal</label>
-        <input type="number" id="vTotal" placeholder="R$ 0,00" oninput="calcularTudo()">
+        <h2>3. Simulação Financeira</h2>
+        <label>Valor Bruto da Nota (R$)</label>
+        <input type="number" id="vTotal" placeholder="0,00" oninput="calcularTudo()">
+
         <div id="resSim" class="hidden" style="margin-top:20px;">
-            <div class="sim-row"><span>VALOR LÍQUIDO ESTIMADO</span><span id="vLiquido" class="total-value">R$ 0,00</span></div>
+            <div id="detalhesImpostos">
+                </div>
+            <div class="sim-row" style="margin-top:15px; border-top: 2px solid var(--orange)">
+                <span>VALOR LÍQUIDO A PAGAR</span>
+                <span id="vLiquido" class="total-value">R$ 0,00</span>
+            </div>
         </div>
     </div>
 </div>
@@ -97,23 +95,18 @@
 <footer onclick="ativarAdmin()">⚙️</footer>
 
 <script>
-    const LINK_NUVEM = "https://gist.githubusercontent.com/gabifreitassilva-pixel/969b06493ae7642340b3ba741e18959a/raw/regras.json";
-
-    const BASE_FIXA = {
-        "1.01": { iss:"S", ir:1.5, pcc:4.65, inss:11, desc:"Análise de Sistemas" },
-        "7.02": { iss:"S", ir:1.2, pcc:0, inss:11, desc:"Execução de Obras" }
-    };
+    // COLE SEU LINK RAW AQUI
+    const LINK_NUVEM = "https://gist.githubusercontent.com/gabifreitassilva-pixel/969b06493ae7642340b3ba741e18959a/raw/regras.json"; 
 
     let REGRAS = {};
     let regimePrestador = "";
-    let localPrestador = "";
+    let tomador = "";
 
     async function inicializar() {
         try {
             const resp = await fetch(LINK_NUVEM);
-            const nuvem = resp.ok ? await resp.json() : {};
-            REGRAS = {...BASE_FIXA, ...nuvem};
-        } catch (e) { REGRAS = BASE_FIXA; }
+            REGRAS = resp.ok ? await resp.json() : {};
+        } catch (e) { console.error("Erro ao carregar nuvem"); }
         
         const sel = document.getElementById('fedCodeSelect');
         sel.innerHTML = '<option value="">-- Selecione o Código --</option>';
@@ -133,33 +126,28 @@
     function cbPrest(d) {
         if (d.status === "ERROR") return alert("CNPJ não encontrado");
         document.getElementById('resRazao').innerText = d.nome;
-        localPrestador = d.municipio;
-        document.getElementById('resLocal').innerText = `${localPrestador} - ${d.uf}`;
+        document.getElementById('resLocal').innerText = `${d.municipio} - ${d.uf}`;
         regimePrestador = (d.simples && d.simples.optante) ? "SIMPLES" : "NORMAL";
-        document.getElementById('resRegime').innerText = regimePrestador;
+        document.getElementById('resRegime').innerText = `REGIME: ${regimePrestador}`;
         document.getElementById('resPrestador').style.display = 'block';
         processarRegras();
     }
 
     function validarFluxo() {
-        const t = document.getElementById('tipoTomador').value;
-        document.getElementById('mod2').className = t ? "module" : "module locked";
-        document.getElementById('mod3').className = t ? "module" : "module locked";
+        tomador = document.getElementById('tipoTomador').value;
+        document.getElementById('mod2').className = tomador ? "module" : "module locked";
+        document.getElementById('mod3').className = tomador ? "module" : "module locked";
         processarRegras();
     }
 
     function processarRegras() {
         const cod = document.getElementById('fedCodeSelect').value;
-        const tom = document.getElementById('tipoTomador').value;
         if (!REGRAS[cod]) return;
-        
         const r = REGRAS[cod];
-        const ir = (regimePrestador !== "SIMPLES" && tom !== "CONDOMINIO" && r.ir > 0);
-        const pcc = (regimePrestador !== "SIMPLES" && r.pcc > 0);
 
         setSt('stISS', r.iss === "S");
-        setSt('stIRRF', ir);
-        setSt('stPCC', pcc);
+        setSt('stIRRF', (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0));
+        setSt('stPCC', (regimePrestador !== "SIMPLES" && r.pcc > 0));
         setSt('stINSS', r.inss > 0);
         calcularTudo();
     }
@@ -172,30 +160,69 @@
 
     function calcularTudo() {
         const vBruto = parseFloat(document.getElementById('vTotal').value) || 0;
-        if (vBruto <= 0) return;
-
-        let vLiquido = vBruto;
         const cod = document.getElementById('fedCodeSelect').value;
-        if (REGRAS[cod]) {
-            const r = REGRAS[cod];
-            const tom = document.getElementById('tipoTomador').value;
-            
-            if (r.iss === "S") vLiquido -= (vBruto * 0.05); 
-            if (regimePrestador !== "SIMPLES" && tom !== "CONDOMINIO" && r.ir > 0) vLiquido -= (vBruto * (r.ir/100));
-            if (regimePrestador !== "SIMPLES" && r.pcc > 0) vLiquido -= (vBruto * (r.pcc/100));
-            if (r.inss > 0) vLiquido -= (vBruto * (r.inss/100));
+        const det = document.getElementById('detalhesImpostos');
+        const resSim = document.getElementById('resSim');
+
+        if (vBruto <= 0 || !REGRAS[cod]) {
+            resSim.classList.add('hidden');
+            return;
         }
 
-        document.getElementById('resSim').classList.remove('hidden');
-        document.getElementById('vLiquido').innerText = vLiquido.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+        const r = REGRAS[cod];
+        let totalRetencoes = 0;
+        let html = "";
+
+        // ISS (Fixo 5% para exemplo)
+        if (r.iss === "S") {
+            let vISS = vBruto * 0.05;
+            totalRetencoes += vISS;
+            html += `<div class="detail-row"><span>ISS (5,00%)</span><span>- ${fmt(vISS)}</span></div>`;
+        }
+
+        // INSS (Geralmente 11%)
+        if (r.inss > 0) {
+            let vINSS = vBruto * (r.inss/100);
+            totalRetencoes += vINSS;
+            html += `<div class="detail-row"><span>INSS (${r.inss.toFixed(2)}%)</span><span>- ${fmt(vINSS)}</span></div>`;
+        }
+
+        // IRRF (Geralmente 1,5% ou 1,2%)
+        if (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0) {
+            let vIR = vBruto * (r.ir/100);
+            totalRetencoes += vIR;
+            html += `<div class="detail-row"><span>IRRF (${r.ir.toFixed(2)}%)</span><span>- ${fmt(vIR)}</span></div>`;
+        }
+
+        // PCC (PIS 0,65% + COFINS 3% + CSLL 1%) = 4,65%
+        if (regimePrestador !== "SIMPLES" && r.pcc > 0) {
+            let vPIS = vBruto * 0.0065;
+            let vCOFINS = vBruto * 0.03;
+            let vCSLL = vBruto * 0.01;
+            let vPCC_TOTAL = vPIS + vCOFINS + vCSLL;
+            totalRetencoes += vPCC_TOTAL;
+            
+            html += `
+                <div style="background: #252525; padding: 10px; border-radius: 6px; margin: 10px 0;">
+                    <div class="detail-row" style="color:var(--yellow); font-weight:bold;"><span>PCC TOTAL (4,65%)</span><span>- ${fmt(vPCC_TOTAL)}</span></div>
+                    <div class="detail-row"><span>> PIS (0,65%)</span><span>${fmt(vPIS)}</span></div>
+                    <div class="detail-row"><span>> COFINS (3,00%)</span><span>${fmt(vCOFINS)}</span></div>
+                    <div class="detail-row"><span>> CSLL (1,00%)</span><span>${fmt(vCSLL)}</span></div>
+                </div>`;
+        }
+
+        det.innerHTML = html;
+        document.getElementById('vLiquido').innerText = fmt(vBruto - totalRetencoes);
+        resSim.classList.remove('hidden');
     }
+
+    function fmt(v) { return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
 
     function ativarAdmin() { if(prompt("Senha:") === "admin123") document.getElementById('adminPanel').classList.remove('hidden'); }
     
     function salvarLocal() {
         const c = document.getElementById('newCod').value, d = document.getElementById('newDesc').value;
         if(!c || !d) return alert("Preencha!");
-        
         REGRAS[c] = {
             iss: document.getElementById('flagISS').checked ? "S" : "N",
             ir: document.getElementById('flagIR').checked ? 1.5 : 0,
@@ -203,34 +230,19 @@
             inss: document.getElementById('flagINSS').checked ? 11 : 0,
             desc: d
         };
-        
-        const out = document.getElementById('outputNuvem');
-        out.value = JSON.stringify(REGRAS, null, 2);
-        out.classList.remove('hidden');
-        alert("JSON Gerado! Clique em 'Copiar JSON'.");
+        document.getElementById('outputNuvem').value = JSON.stringify(REGRAS, null, 2);
+        alert("JSON Gerado! Clique em COPIAR.");
         inicializar();
     }
 
     function copiarTexto() {
         const area = document.getElementById('outputNuvem');
-        if(!area.value) return alert("Gere o JSON primeiro!");
         area.select();
         navigator.clipboard.writeText(area.value);
-        alert("Copiado com sucesso! Agora cole no seu Gist.");
-    }
-
-    function solicitarCodigo() {
-        const nome = prompt("Seu nome:");
-        const codSoli = prompt("Qual código de serviço você precisa?");
-        if(nome && codSoli) {
-            const msg = `Olá! Meu nome é ${nome}. Gostaria de solicitar a inclusão de um novo código de serviço: ${codSoli}. Município do prestador: ${localPrestador || 'Não informado'}`;
-            window.open(`https://wa.me/5511911224407?text=${encodeURIComponent(msg)}`);
-        }
+        alert("Copiado! Agora cole no seu Gist.");
     }
 
     inicializar();
 </script>
 </body>
 </html>
-
-
