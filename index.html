@@ -20,8 +20,7 @@
         .total-value { font-size: 22px; font-weight: bold; color: var(--green); }
         .alert-box { background: rgba(255, 68, 68, 0.1); border: 1px solid var(--red); color: var(--red); padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px; font-weight: bold; text-align: center; line-height: 1.4; }
         .btn-nova { background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
-        .btn-solicitar { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); width: 100%; padding: 10px; margin-top: 15px; border-radius: 6px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
-        .btn-solicitar:hover { background: var(--yellow); color: black; }
+        .btn-solicitar { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); width: 100%; padding: 8px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; }
         #adminPanel { background: #252525; border: 1px dashed var(--orange); padding: 15px; border-radius: 8px; margin: 15px 0; }
         footer { position: fixed; bottom: 10px; right: 20px; opacity: 0.3; cursor: pointer; font-size: 20px; }
     </style>
@@ -85,32 +84,24 @@
 
     <div class="module locked" id="mod3">
         <h2>3. Simulação Financeira</h2>
-        <label>Valor Bruto da Nota (R$)</label>
-        <input type="number" id="vTotal" placeholder="0,00" oninput="calcularTudo()">
-
-        <div id="areaISS" class="hidden" style="margin-top:15px; padding:10px; border:1px solid var(--green); border-radius:6px; background: rgba(0, 255, 136, 0.05);">
-            <label style="color:var(--green); margin-top: 0;">Alíquota ISS (%) - Preenchimento Manual</label>
+        <input type="number" id="vTotal" placeholder="Valor Bruto da Nota" oninput="calcularTudo()">
+        <div id="areaISS" class="hidden" style="margin-top:10px; padding:10px; border:1px solid var(--green); border-radius:4px;">
+            <label style="color:var(--green); margin:0;">Alíquota ISS (%) Manual</label>
             <input type="number" id="aliqISS" value="5.00" step="0.01" oninput="calcularTudo()">
         </div>
-
         <div id="resSim" class="hidden" style="margin-top:20px;">
-            <h4 style="font-size:11px; color:var(--orange); margin-bottom: 5px;">RETENÇÕES DETALHADAS</h4>
             <div class="sim-row"><span>ISS</span><span id="valISS">R$ 0,00</span></div>
             <div class="sim-row"><span>INSS</span><span id="valINSS">R$ 0,00</span></div>
             <div class="sim-row"><span>IR</span><span id="valIR">R$ 0,00</span></div>
             <div class="sim-row"><span>PIS (0,65%)</span><span id="valPIS">R$ 0,00</span></div>
             <div class="sim-row"><span>COFINS (3,00%)</span><span id="valCOFINS">R$ 0,00</span></div>
             <div class="sim-row"><span>CSLL (1,00%)</span><span id="valCSLL">R$ 0,00</span></div>
-            <div class="sim-row" style="color:var(--yellow); font-weight:bold; border-bottom: 2px solid var(--yellow)"><span>TOTAL PCC (4,65%)</span><span id="valPCC">R$ 0,00</span></div>
-            
-            <div class="sim-row" style="margin-top:15px; padding-top:10px;">
-                <span style="color:var(--green); font-weight:bold;">VALOR LÍQUIDO A PAGAR</span>
+            <div class="sim-row" style="color:var(--yellow); font-weight:bold;"><span>TOTAL PCC (4,65%)</span><span id="valPCC">R$ 0,00</span></div>
+            <div class="sim-row" style="margin-top:10px; border-top: 2px solid var(--green); padding-top:10px;">
+                <span style="color:var(--green); font-weight:bold;">VALOR LÍQUIDO</span>
                 <span id="vLiquido" class="total-value">R$ 0,00</span>
             </div>
-
-            <div class="alert-box">
-                ⚠️ ATENÇÃO: Se a nota fiscal estiver diferente deste simulador, NÃO EFETUE O PAGAMENTO. Entre em contato para uma conferência aprofundada antes de prosseguir.
-            </div>
+            <div class="alert-box">⚠️ SE DIVERGIR DA NOTA, NÃO PAGUE. ENTRE EM CONTATO.</div>
         </div>
     </div>
 </div>
@@ -119,36 +110,24 @@
 
 <script>
     const LINK_NUVEM = "https://gist.githubusercontent.com/gabifreitassilva-pixel/969b06493ae7642340b3ba741e18959a/raw/regras.json"; 
-
-    let REGRAS = {};
-    let regimePrestador = "";
-    let tomador = "";
+    let REGRAS = {}, regimePrestador = "", tomador = "";
 
     async function inicializar() {
-        try {
-            const resp = await fetch(LINK_NUVEM);
-            REGRAS = resp.ok ? await resp.json() : {};
-        } catch (e) { console.error("Erro na nuvem"); }
-        
+        try { const resp = await fetch(LINK_NUVEM); REGRAS = resp.ok ? await resp.json() : {}; } catch (e) {}
         const sel = document.getElementById('fedCodeSelect');
         sel.innerHTML = '<option value="">-- Selecione o Código --</option>';
-        Object.keys(REGRAS).sort().forEach(k => {
-            sel.innerHTML += `<option value="${k}">${k} - ${REGRAS[k].desc}</option>`;
-        });
+        Object.keys(REGRAS).sort().forEach(k => { sel.innerHTML += `<option value="${k}">${k} - ${REGRAS[k].desc}</option>`; });
     }
 
     function buscarPrestador() {
         const cnpj = document.getElementById('cnpjInput').value.replace(/\D/g, '');
-        if (cnpj.length !== 14) return alert("CNPJ Inválido");
         const s = document.createElement('script');
         s.src = `https://receitaws.com.br/v1/cnpj/${cnpj}?callback=cbPrest`;
         document.body.appendChild(s);
     }
 
     function cbPrest(d) {
-        if (d.status === "ERROR") return alert("CNPJ não encontrado");
         document.getElementById('resRazao').innerText = d.nome;
-        document.getElementById('resLocal').innerText = `${d.municipio} - ${d.uf}`;
         regimePrestador = (d.simples && d.simples.optante) ? "SIMPLES" : "NORMAL";
         document.getElementById('resRegime').innerText = `REGIME: ${regimePrestador}`;
         document.getElementById('resPrestador').style.display = 'block';
@@ -159,108 +138,58 @@
         tomador = document.getElementById('tipoTomador').value;
         document.getElementById('mod2').className = tomador ? "module" : "module locked";
         document.getElementById('mod3').className = tomador ? "module" : "module locked";
-        processarRegras();
     }
 
     function processarRegras() {
-        const cod = document.getElementById('fedCodeSelect').value;
-        if (!REGRAS[cod]) return;
-        const r = REGRAS[cod];
-
+        const r = REGRAS[document.getElementById('fedCodeSelect').value];
+        if (!r) return;
         setSt('stISS', r.iss === "S");
         setSt('stIRRF', (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0));
         setSt('stPCC', (regimePrestador !== "SIMPLES" && r.pcc > 0));
         setSt('stINSS', r.inss > 0);
-
         document.getElementById('areaISS').className = (r.iss === "S") ? "" : "hidden";
         calcularTudo();
     }
 
-    function setSt(id, v) {
-        const e = document.getElementById(id);
-        e.innerText = v ? "SIM" : "NÃO";
-        e.className = "tax-status " + (v ? "status-sim" : "status-nao");
+    function setSt(id, v) { 
+        const e = document.getElementById(id); 
+        e.innerText = v ? "SIM" : "NÃO"; 
+        e.className = "tax-status " + (v ? "status-sim" : "status-nao"); 
     }
 
     function calcularTudo() {
         const vBruto = parseFloat(document.getElementById('vTotal').value) || 0;
-        const cod = document.getElementById('fedCodeSelect').value;
-        const resSim = document.getElementById('resSim');
+        const r = REGRAS[document.getElementById('fedCodeSelect').value];
+        if (vBruto <= 0 || !r) return;
 
-        if (vBruto <= 0 || !REGRAS[cod]) {
-            resSim.classList.add('hidden');
-            return;
-        }
-
-        const r = REGRAS[cod];
-        let totalRetencoes = 0;
-
-        let vISS = 0;
-        if (r.iss === "S") {
-            const aliqManual = parseFloat(document.getElementById('aliqISS').value) || 0;
-            vISS = vBruto * (aliqManual / 100);
-        }
-        document.getElementById('valISS').innerText = fmt(vISS);
-        totalRetencoes += vISS;
-
-        let vINSS = (r.inss > 0) ? vBruto * (r.inss / 100) : 0;
-        document.getElementById('valINSS').innerText = fmt(vINSS);
-        totalRetencoes += vINSS;
-
-        let vIR = (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0) ? vBruto * (r.ir / 100) : 0;
-        document.getElementById('valIR').innerText = fmt(vIR);
-        totalRetencoes += vIR;
-
+        let vISS = (r.iss === "S") ? vBruto * (parseFloat(document.getElementById('aliqISS').value)/100) : 0;
+        let vINSS = (r.inss > 0) ? vBruto * (r.inss/100) : 0;
+        let vIR = (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0) ? vBruto * (r.ir/100) : 0;
         let vPIS = 0, vCOFINS = 0, vCSLL = 0, vPCC = 0;
         if (regimePrestador !== "SIMPLES" && r.pcc > 0) {
-            vPIS = vBruto * 0.0065;
-            vCOFINS = vBruto * 0.03;
-            vCSLL = vBruto * 0.01;
-            vPCC = vPIS + vCOFINS + vCSLL;
+            vPIS = vBruto * 0.0065; vCOFINS = vBruto * 0.03; vCSLL = vBruto * 0.01; vPCC = vPIS + vCOFINS + vCSLL;
         }
+
+        document.getElementById('valISS').innerText = fmt(vISS);
+        document.getElementById('valINSS').innerText = fmt(vINSS);
+        document.getElementById('valIR').innerText = fmt(vIR);
         document.getElementById('valPIS').innerText = fmt(vPIS);
         document.getElementById('valCOFINS').innerText = fmt(vCOFINS);
         document.getElementById('valCSLL').innerText = fmt(vCSLL);
         document.getElementById('valPCC').innerText = fmt(vPCC);
-        totalRetencoes += vPCC;
-
-        document.getElementById('vLiquido').innerText = fmt(vBruto - totalRetencoes);
-        resSim.classList.remove('hidden');
+        document.getElementById('vLiquido').innerText = fmt(vBruto - (vISS + vINSS + vIR + vPCC));
+        document.getElementById('resSim').classList.remove('hidden');
     }
 
     function solicitarCodigo() {
-        const c = prompt("Qual o código de serviço que você deseja incluir?");
-        if(c) alert("Solicitação enviada! Em breve o código " + c + " estará disponível.");
+        const c = prompt("Qual código deseja incluir?");
+        if(c) alert("Solicitação do código " + c + " enviada!");
     }
 
     function fmt(v) { return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
-
     function ativarAdmin() { if(prompt("Senha:") === "admin123") document.getElementById('adminPanel').classList.remove('hidden'); }
+    function copiarTexto() { const area = document.getElementById('outputNuvem'); area.select(); navigator.clipboard.writeText(area.value); alert("Copiado!"); }
     
-    function salvarLocal() {
-        const c = document.getElementById('newCod').value, d = document.getElementById('newDesc').value;
-        if(!c || !d) return alert("Preencha!");
-        REGRAS[c] = {
-            iss: document.getElementById('flagISS').checked ? "S" : "N",
-            ir: document.getElementById('flagIR').checked ? 1.5 : 0,
-            pcc: document.getElementById('flagPCC').checked ? 4.65 : 0,
-            inss: document.getElementById('flagINSS').checked ? 11 : 0,
-            desc: d
-        };
-        const out = document.getElementById('outputNuvem');
-        out.value = JSON.stringify(REGRAS, null, 2);
-        out.classList.remove('hidden');
-        alert("JSON Gerado! Clique em COPIAR JSON.");
-        inicializar();
-    }
-
-    function copiarTexto() {
-        const area = document.getElementById('outputNuvem');
-        area.select();
-        navigator.clipboard.writeText(area.value);
-        alert("Copiado com sucesso! Agora cole no seu Gist.");
-    }
-
     inicializar();
 </script>
 </body>
