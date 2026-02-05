@@ -64,23 +64,6 @@
             <div class="sim-row"><span>PCC Retido (4,65%)</span><span id="stPCC" class="tax-status status-nao">Não</span></div>
             <div class="sim-row"><span>INSS Retido</span><span id="stINSS" class="tax-status status-nao">Não</span></div>
         </div>
-
-        <div id="adminPanel" class="hidden">
-            <h4 style="color:var(--green); font-size:11px; margin:0 0 10px 0;">🛠 MODO CRIADOR</h4>
-            <input type="text" id="newCod" placeholder="Cód: 7.02" style="margin-bottom:5px;">
-            <input type="text" id="newDesc" placeholder="Descrição" style="margin-bottom:5px;">
-            <div style="display: flex; gap: 10px; margin-top: 10px; font-size: 10px;">
-                <label><input type="checkbox" id="flagISS"> ISS</label>
-                <label><input type="checkbox" id="flagINSS"> INSS</label>
-                <label><input type="checkbox" id="flagPCC"> PCC</label>
-                <label><input type="checkbox" id="flagIR"> IR</label>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button onclick="salvarLocal()" style="flex: 1; background:var(--green); color:black; font-weight:bold; border:none; padding:8px; border-radius:4px; cursor:pointer;">GERAR JSON</button>
-                <button onclick="copiarTexto()" style="flex: 1; background:var(--white); color:black; font-weight:bold; border:none; padding:8px; border-radius:4px; cursor:pointer;">COPIAR JSON</button>
-            </div>
-            <textarea id="outputNuvem" class="hidden" style="width:100%; margin-top:10px; height:60px; font-size:10px; background:#000; color:var(--green); font-family:monospace;"></textarea>
-        </div>
     </div>
 
     <div class="module locked" id="mod3">
@@ -141,15 +124,26 @@
         tomador = document.getElementById('tipoTomador').value;
         document.getElementById('mod2').className = tomador ? "module" : "module locked";
         document.getElementById('mod3').className = tomador ? "module" : "module locked";
+        processarRegras(); // Reavalia as regras sempre que mudar o tomador
     }
 
     function processarRegras() {
         const r = REGRAS[document.getElementById('fedCodeSelect').value];
         if (!r) return;
+
+        // REGRA DE EXIBIÇÃO: ISS
         setSt('stISS', r.iss === "S");
-        setSt('stIRRF', (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0));
+        
+        // REGRA DE EXIBIÇÃO: IRRF (NUNCA retém se for Condomínio)
+        const podeReterIR = (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0);
+        setSt('stIRRF', podeReterIR);
+
+        // REGRA DE EXIBIÇÃO: PCC
         setSt('stPCC', (regimePrestador !== "SIMPLES" && r.pcc > 0));
+
+        // REGRA DE EXIBIÇÃO: INSS
         setSt('stINSS', r.inss > 0);
+
         document.getElementById('areaISS').className = (r.iss === "S") ? "" : "hidden";
         calcularTudo();
     }
@@ -167,9 +161,11 @@
 
         let vISS = (r.iss === "S") ? vBruto * (parseFloat(document.getElementById('aliqISS').value)/100) : 0;
         let vINSS = (r.inss > 0) ? vBruto * (r.inss/100) : 0;
-        let vIR = (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0) ? vBruto * (r.ir/100) : 0;
-        let vPIS = 0, vCOFINS = 0, vCSLL = 0, vPCC = 0;
         
+        // CÁLCULO IR: Zera se for Condomínio
+        let vIR = (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0) ? vBruto * (r.ir/100) : 0;
+        
+        let vPIS = 0, vCOFINS = 0, vCSLL = 0, vPCC = 0;
         if (regimePrestador !== "SIMPLES" && r.pcc > 0) {
             vPIS = vBruto * 0.0065; vCOFINS = vBruto * 0.03; vCSLL = vBruto * 0.01; vPCC = vPIS + vCOFINS + vCSLL;
         }
@@ -185,29 +181,22 @@
         document.getElementById('resSim').classList.remove('hidden');
     }
 
-    // NOVA FUNÇÃO DO WHATSAPP CONFORME SOLICITADO
     function solicitarCodigo() {
         const nome = prompt("Qual o seu nome?");
         if (!nome) return;
-
         const municipio = prompt("Qual o município do prestador?");
         if (!municipio) return;
-
         const cod = prompt("Qual código de serviço deseja incluir?");
         if (!cod) return;
 
-        // --- INSIRA SEU WHATSAPP ABAIXO ---
-        const seuWhatsapp = "5511911224407"; 
-
+        const seuWhatsapp = "5511999999999"; 
         const msg = `Olá! Gostaria de solicitar a inclusão de um código de serviço.%0A%0A` +
                     `*Solicitante:* ${nome}%0A` +
                     `*Município:* ${municipio}%0A` +
                     `*Código:* ${cod}`;
-
         window.open(`https://api.whatsapp.com/send?phone=${seuWhatsapp}&text=${msg}`, '_blank');
     }
 
-    // LIMPAR TUDO PARA NOVA CONSULTA
     function novaConsulta() {
         if(confirm("Deseja limpar todos os campos para uma nova consulta?")) {
             location.reload();
@@ -215,8 +204,6 @@
     }
 
     function fmt(v) { return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
-    function ativarAdmin() { if(prompt("Senha:") === "admin123") document.getElementById('adminPanel').classList.remove('hidden'); }
-    function copiarTexto() { const area = document.getElementById('outputNuvem'); area.select(); navigator.clipboard.writeText(area.value); alert("Copiado!"); }
     
     inicializar();
 </script>
