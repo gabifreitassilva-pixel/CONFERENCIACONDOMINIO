@@ -20,7 +20,7 @@
         .total-value { font-size: 22px; font-weight: bold; color: var(--green); }
         .alert-box { background: rgba(255, 68, 68, 0.1); border: 1px solid var(--red); color: var(--red); padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px; font-weight: bold; text-align: center; line-height: 1.4; }
         .btn-nova { background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
-        .btn-solicitar { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); width: 100%; padding: 8px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; }
+        .btn-solicitar { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); width: 100%; padding: 8px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; width: 100%; }
         footer { position: fixed; bottom: 10px; right: 20px; opacity: 0.3; cursor: pointer; font-size: 20px; }
     </style>
 </head>
@@ -52,9 +52,7 @@
         <select id="fedCodeSelect" onchange="processarRegras()">
             <option value="">Carregando...</option>
         </select>
-
         <button class="btn-solicitar" onclick="solicitarCodigo()">Não achou o código? Faça aqui Solicitação de inclusão</button>
-
         <div style="margin-top: 20px;">
             <div class="sim-row"><span>ISS Retido</span><span id="stISS" class="tax-status status-nao">Não</span></div>
             <div class="sim-row"><span>IRRF Retido</span><span id="stIRRF" class="tax-status status-nao">Não</span></div>
@@ -110,33 +108,40 @@
         regimePrestador = (d.simples && d.simples.optante) ? "SIMPLES" : "NORMAL";
         document.getElementById('resRegime').innerText = `REGIME: ${regimePrestador}`;
         document.getElementById('resPrestador').style.display = 'block';
-        processarRegras();
+        processarRegras(); 
     }
 
     function validarFluxo() {
         tomador = document.getElementById('tipoTomador').value;
-        document.getElementById('mod2').className = tomador ? "module" : "module locked";
-        document.getElementById('mod3').className = tomador ? "module" : "module locked";
-        // IMPORTANTE: Atualiza as regras assim que mudar o tomador
-        processarRegras();
+        const m2 = document.getElementById('mod2');
+        const m3 = document.getElementById('mod3');
+        if (tomador) {
+            m2.classList.remove('locked');
+            m3.classList.remove('locked');
+            processarRegras(); // ESSA LINHA FAZ O MÓDULO 2 ATUALIZAR AO MUDAR O TOMADOR
+        } else {
+            m2.classList.add('locked');
+            m3.classList.add('locked');
+        }
     }
 
     function processarRegras() {
-        const r = REGRAS[document.getElementById('fedCodeSelect').value];
+        const cod = document.getElementById('fedCodeSelect').value;
+        const r = REGRAS[cod];
         if (!r) return;
 
-        // ISS
+        // Regra ISS
         setSt('stISS', r.iss === "S");
         
-        // IRRF: Se tomador for Condomínio OU prestador for Simples -> NÃO RETÉM
+        // REGRA IRRF: SÓ É SIM SE (TOMADOR NÃO FOR CONDOMÍNIO) E (PRESTADOR NÃO FOR SIMPLES)
         const retemIR = (tomador !== "CONDOMINIO" && regimePrestador !== "SIMPLES" && r.ir > 0);
         setSt('stIRRF', retemIR);
 
-        // PCC: Se prestador for Simples -> NÃO RETÉM
+        // REGRA PCC: SÓ É SIM SE (PRESTADOR NÃO FOR SIMPLES)
         const retemPCC = (regimePrestador !== "SIMPLES" && r.pcc > 0);
         setSt('stPCC', retemPCC);
 
-        // INSS
+        // Regra INSS
         setSt('stINSS', r.inss > 0);
 
         document.getElementById('areaISS').className = (r.iss === "S") ? "" : "hidden";
@@ -157,7 +162,7 @@
         let vISS = (r.iss === "S") ? vBruto * (parseFloat(document.getElementById('aliqISS').value)/100) : 0;
         let vINSS = (r.inss > 0) ? vBruto * (r.inss/100) : 0;
         
-        // IR: Segue a mesma lógica do Módulo 2
+        // Cálculo IR: Segue a mesma trava do Módulo 2
         let vIR = (tomador !== "CONDOMINIO" && regimePrestador !== "SIMPLES" && r.ir > 0) ? vBruto * (r.ir/100) : 0;
         
         let vPIS = 0, vCOFINS = 0, vCSLL = 0, vPCC = 0;
@@ -178,22 +183,18 @@
 
     function solicitarCodigo() {
         const nome = prompt("Qual o seu nome?");
-        if(!nome) return;
-        const municipio = prompt("Qual é o município do prestador?");
-        if(!municipio) return;
-        const cod = prompt("Qual código e descrição deseja incluir?");
-        
-        if(cod) {
-            const tel = "5511911224407"; // SUBSTITUA PELO SEU NÚMERO
-            const msg = window.encodeURIComponent(`Olá, meu nome é ${nome}. Gostaria de solicitar a inclusão do código ${cod} para o município ${municipio}.`);
-            window.open(`https://api.whatsapp.com/send?phone=${tel}&text=${msg}`, '_blank');
+        if (!nome) return;
+        const municipio = prompt("Qual o município do prestador?");
+        if (!municipio) return;
+        const cod = prompt("Qual código de serviço deseja incluir?");
+        if (cod) {
+            const link = `https://api.whatsapp.com/send?phone=5511911224407&text=Olá! Meu nome é ${nome}. Gostaria de solicitar a inclusão do código ${cod} para o município ${municipio}.`;
+            window.open(link, '_blank');
         }
     }
 
     function fmt(v) { return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
-    
     inicializar();
 </script>
 </body>
 </html>
-
