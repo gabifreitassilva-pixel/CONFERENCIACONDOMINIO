@@ -20,7 +20,8 @@
         .total-value { font-size: 22px; font-weight: bold; color: var(--green); }
         .alert-box { background: rgba(255, 68, 68, 0.1); border: 1px solid var(--red); color: var(--red); padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px; font-weight: bold; text-align: center; line-height: 1.4; }
         .btn-nova { background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
-        .btn-solicitar { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); width: 100%; padding: 8px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; width: 100%; }
+        .btn-solicitar { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); width: 100%; padding: 8px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; }
+        #adminPanel { background: #252525; border: 1px dashed var(--orange); padding: 15px; border-radius: 8px; margin: 15px 0; }
         footer { position: fixed; bottom: 10px; right: 20px; opacity: 0.3; cursor: pointer; font-size: 20px; }
     </style>
 </head>
@@ -59,6 +60,23 @@
             <div class="sim-row"><span>PCC Retido (4,65%)</span><span id="stPCC" class="tax-status status-nao">Não</span></div>
             <div class="sim-row"><span>INSS Retido</span><span id="stINSS" class="tax-status status-nao">Não</span></div>
         </div>
+
+        <div id="adminPanel" class="hidden">
+            <h4 style="color:var(--green); font-size:11px; margin:10px 0;">🛠 MODO CRIADOR</h4>
+            <input type="text" id="newCod" placeholder="Cód: 7.02" style="margin-bottom:5px;">
+            <input type="text" id="newDesc" placeholder="Descrição" style="margin-bottom:5px;">
+            <div style="display: flex; gap: 10px; margin-top: 10px; font-size: 10px;">
+                <label><input type="checkbox" id="flagISS"> ISS</label>
+                <label><input type="checkbox" id="flagINSS"> INSS</label>
+                <label><input type="checkbox" id="flagPCC"> PCC</label>
+                <label><input type="checkbox" id="flagIR"> IR</label>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button onclick="gerarJSON()" style="flex: 1; background:var(--green); color:black; font-weight:bold; border:none; padding:8px; border-radius:4px; cursor:pointer;">GERAR JSON</button>
+                <button onclick="copiarTexto()" style="flex: 1; background:var(--white); color:black; font-weight:bold; border:none; padding:8px; border-radius:4px; cursor:pointer;">COPIAR</button>
+            </div>
+            <textarea id="outputNuvem" class="hidden" style="width:100%; margin-top:10px; height:60px; font-size:10px; background:#000; color:var(--green); font-family:monospace;"></textarea>
+        </div>
     </div>
 
     <div class="module locked" id="mod3">
@@ -84,6 +102,8 @@
         </div>
     </div>
 </div>
+
+<footer onclick="ativarAdmin()">⚙️</footer>
 
 <script>
     const LINK_NUVEM = "https://gist.githubusercontent.com/gabifreitassilva-pixel/969b06493ae7642340b3ba741e18959a/raw/regras.json"; 
@@ -113,35 +133,20 @@
 
     function validarFluxo() {
         tomador = document.getElementById('tipoTomador').value;
-        const m2 = document.getElementById('mod2');
-        const m3 = document.getElementById('mod3');
-        if (tomador) {
-            m2.classList.remove('locked');
-            m3.classList.remove('locked');
-            processarRegras(); // ESSA LINHA FAZ O MÓDULO 2 ATUALIZAR AO MUDAR O TOMADOR
-        } else {
-            m2.classList.add('locked');
-            m3.classList.add('locked');
-        }
+        document.getElementById('mod2').className = tomador ? "module" : "module locked";
+        document.getElementById('mod3').className = tomador ? "module" : "module locked";
+        processarRegras();
     }
 
     function processarRegras() {
-        const cod = document.getElementById('fedCodeSelect').value;
-        const r = REGRAS[cod];
+        const r = REGRAS[document.getElementById('fedCodeSelect').value];
         if (!r) return;
 
-        // Regra ISS
         setSt('stISS', r.iss === "S");
-        
-        // REGRA IRRF: SÓ É SIM SE (TOMADOR NÃO FOR CONDOMÍNIO) E (PRESTADOR NÃO FOR SIMPLES)
+        // REGRA DE OURO: Condomínio ou Simples Nacional NÃO retém IR
         const retemIR = (tomador !== "CONDOMINIO" && regimePrestador !== "SIMPLES" && r.ir > 0);
         setSt('stIRRF', retemIR);
-
-        // REGRA PCC: SÓ É SIM SE (PRESTADOR NÃO FOR SIMPLES)
-        const retemPCC = (regimePrestador !== "SIMPLES" && r.pcc > 0);
-        setSt('stPCC', retemPCC);
-
-        // Regra INSS
+        setSt('stPCC', (regimePrestador !== "SIMPLES" && r.pcc > 0));
         setSt('stINSS', r.inss > 0);
 
         document.getElementById('areaISS').className = (r.iss === "S") ? "" : "hidden";
@@ -161,8 +166,6 @@
 
         let vISS = (r.iss === "S") ? vBruto * (parseFloat(document.getElementById('aliqISS').value)/100) : 0;
         let vINSS = (r.inss > 0) ? vBruto * (r.inss/100) : 0;
-        
-        // Cálculo IR: Segue a mesma trava do Módulo 2
         let vIR = (tomador !== "CONDOMINIO" && regimePrestador !== "SIMPLES" && r.ir > 0) ? vBruto * (r.ir/100) : 0;
         
         let vPIS = 0, vCOFINS = 0, vCSLL = 0, vPCC = 0;
@@ -183,14 +186,38 @@
 
     function solicitarCodigo() {
         const nome = prompt("Qual o seu nome?");
-        if (!nome) return;
-        const municipio = prompt("Qual o município do prestador?");
-        if (!municipio) return;
-        const cod = prompt("Qual código de serviço deseja incluir?");
-        if (cod) {
-            const link = `https://api.whatsapp.com/send?phone=5511911224407&text=Olá! Meu nome é ${nome}. Gostaria de solicitar a inclusão do código ${cod} para o município ${municipio}.`;
-            window.open(link, '_blank');
+        const mun = prompt("Qual o município do prestador?");
+        const cod = prompt("Qual código deseja incluir?");
+        if(nome && mun && cod) {
+            const msg = window.encodeURIComponent(`Olá! Sou ${nome}. Solicito inclusão do código ${cod} (Município: ${mun}).`);
+            window.open(`https://api.whatsapp.com/send?phone=5511911224407&text=${msg}`, '_blank');
         }
+    }
+
+    function ativarAdmin() { if(prompt("Senha:") === "admin123") document.getElementById('adminPanel').classList.remove('hidden'); }
+    
+    function gerarJSON() {
+        const c = document.getElementById('newCod').value;
+        const d = document.getElementById('newDesc').value;
+        const novoObjeto = {
+            [c]: {
+                desc: d,
+                iss: document.getElementById('flagISS').checked ? "S" : "N",
+                ir: document.getElementById('flagIR').checked ? 1.5 : 0,
+                inss: document.getElementById('flagINSS').checked ? 11 : 0,
+                pcc: document.getElementById('flagPCC').checked ? 4.65 : 0
+            }
+        };
+        const area = document.getElementById('outputNuvem');
+        area.value = JSON.stringify(novoObjeto, null, 2);
+        area.classList.remove('hidden');
+    }
+
+    function copiarTexto() { 
+        const area = document.getElementById('outputNuvem');
+        area.select();
+        navigator.clipboard.writeText(area.value);
+        alert("Copiado! Agora cole no seu arquivo JSON.");
     }
 
     function fmt(v) { return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
