@@ -181,10 +181,10 @@
         if(!nome) return;
         const municipio = prompt("Qual é o município do prestador?");
         if(!municipio) return;
-        const cod = prompt("Qual código deseja incluir?");
+        const cod = prompt("Qual código e descrição deseja incluir?");
         
         if(cod) {
-            const tel = "5511999999999"; // SUBSTITUA PELO SEU NÚMERO
+            const tel = "5511911224407"; // SUBSTITUA PELO SEU NÚMERO
             const msg = window.encodeURIComponent(`Olá, meu nome é ${nome}. Gostaria de solicitar a inclusão do código ${cod} para o município ${municipio}.`);
             window.open(`https://api.whatsapp.com/send?phone=${tel}&text=${msg}`, '_blank');
         }
@@ -196,3 +196,4 @@
 </script>
 </body>
 </html>
+
