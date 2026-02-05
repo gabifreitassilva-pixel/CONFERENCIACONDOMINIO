@@ -20,7 +20,8 @@
         .total-value { font-size: 22px; font-weight: bold; color: var(--green); }
         .alert-box { background: rgba(255, 68, 68, 0.1); border: 1px solid var(--red); color: var(--red); padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px; font-weight: bold; text-align: center; line-height: 1.4; }
         .btn-nova { background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
-        .btn-nova:hover { background: var(--orange); border-color: var(--orange); }
+        .btn-solicitar { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); width: 100%; padding: 10px; margin-top: 15px; border-radius: 6px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
+        .btn-solicitar:hover { background: var(--yellow); color: black; }
         #adminPanel { background: #252525; border: 1px dashed var(--orange); padding: 15px; border-radius: 8px; margin: 15px 0; }
         footer { position: fixed; bottom: 10px; right: 20px; opacity: 0.3; cursor: pointer; font-size: 20px; }
     </style>
@@ -54,6 +55,8 @@
         <select id="fedCodeSelect" onchange="processarRegras()">
             <option value="">Carregando...</option>
         </select>
+
+        <button class="btn-solicitar" onclick="solicitarCodigo()">Não achou o código? Solicitar inclusão</button>
 
         <div style="margin-top: 20px;">
             <div class="sim-row"><span>ISS Retido</span><span id="stISS" class="tax-status status-nao">Não</span></div>
@@ -223,6 +226,11 @@
 
         document.getElementById('vLiquido').innerText = fmt(vBruto - totalRetencoes);
         resSim.classList.remove('hidden');
+    }
+
+    function solicitarCodigo() {
+        const c = prompt("Qual o código de serviço que você deseja incluir?");
+        if(c) alert("Solicitação enviada! Em breve o código " + c + " estará disponível.");
     }
 
     function fmt(v) { return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
