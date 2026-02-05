@@ -22,7 +22,6 @@
         .btn-nova { background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .btn-solicitar { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); width: 100%; padding: 8px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; transition: 0.3s; }
         .btn-solicitar:hover { background: var(--yellow); color: black; }
-        #adminPanel { background: #252525; border: 1px dashed var(--orange); padding: 15px; border-radius: 8px; margin: 15px 0; }
         footer { position: fixed; bottom: 10px; right: 20px; opacity: 0.3; cursor: pointer; font-size: 20px; }
     </style>
 </head>
@@ -39,12 +38,11 @@
         <div id="resPrestador" style="display:none; margin-top:15px; padding:10px; background:#252525; border-radius:8px;">
             <div id="resRazao"></div>
             <div id="resRegime" style="font-weight:bold; color:var(--yellow)"></div>
-            <div id="resLocal"></div>
         </div>
         <label>Tomador</label>
         <select id="tipoTomador" onchange="validarFluxo()">
             <option value="">-- Selecione --</option>
-            <option value="PJ">Pessoa Jurídica</option>
+            <option value="PJ">Pessoa Jurídica (Empresa)</option>
             <option value="CONDOMINIO">Condomínio</option>
         </select>
     </div>
@@ -55,9 +53,7 @@
         <select id="fedCodeSelect" onchange="processarRegras()">
             <option value="">Carregando...</option>
         </select>
-
-        <button class="btn-solicitar" onclick="solicitarCodigo()">Não achou o código? Clique aqui para solicitar</button>
-
+        <button class="btn-solicitar" onclick="solicitarCodigo()">Não achou o código? Clique aqui</button>
         <div style="margin-top: 20px;">
             <div class="sim-row"><span>ISS Retido</span><span id="stISS" class="tax-status status-nao">Não</span></div>
             <div class="sim-row"><span>IRRF Retido</span><span id="stIRRF" class="tax-status status-nao">Não</span></div>
@@ -77,9 +73,6 @@
             <div class="sim-row"><span>ISS</span><span id="valISS">R$ 0,00</span></div>
             <div class="sim-row"><span>INSS</span><span id="valINSS">R$ 0,00</span></div>
             <div class="sim-row"><span>IR</span><span id="valIR">R$ 0,00</span></div>
-            <div class="sim-row"><span>PIS (0,65%)</span><span id="valPIS">R$ 0,00</span></div>
-            <div class="sim-row"><span>COFINS (3,00%)</span><span id="valCOFINS">R$ 0,00</span></div>
-            <div class="sim-row"><span>CSLL (1,00%)</span><span id="valCSLL">R$ 0,00</span></div>
             <div class="sim-row" style="color:var(--yellow); font-weight:bold;"><span>TOTAL PCC (4,65%)</span><span id="valPCC">R$ 0,00</span></div>
             <div class="sim-row" style="margin-top:10px; border-top: 2px solid var(--green); padding-top:10px;">
                 <span style="color:var(--green); font-weight:bold;">VALOR LÍQUIDO</span>
@@ -89,8 +82,6 @@
         </div>
     </div>
 </div>
-
-<footer onclick="ativarAdmin()">⚙️</footer>
 
 <script>
     const LINK_NUVEM = "https://gist.githubusercontent.com/gabifreitassilva-pixel/969b06493ae7642340b3ba741e18959a/raw/regras.json"; 
@@ -117,31 +108,46 @@
         regimePrestador = (d.simples && d.simples.optante) ? "SIMPLES" : "NORMAL";
         document.getElementById('resRegime').innerText = `REGIME: ${regimePrestador}`;
         document.getElementById('resPrestador').style.display = 'block';
-        processarRegras();
+        processarRegras(); 
     }
 
+    // ALTERAÇÃO AQUI: Agora força o processamento das regras ao trocar o tomador
     function validarFluxo() {
         tomador = document.getElementById('tipoTomador').value;
-        document.getElementById('mod2').className = tomador ? "module" : "module locked";
-        document.getElementById('mod3').className = tomador ? "module" : "module locked";
-        processarRegras(); // Reavalia as regras sempre que mudar o tomador
+        const mod2 = document.getElementById('mod2');
+        const mod3 = document.getElementById('mod3');
+        
+        if (tomador) {
+            mod2.classList.remove('locked');
+            mod3.classList.remove('locked');
+            processarRegras(); // ATUALIZA O MÓDULO 2 IMEDIATAMENTE
+        } else {
+            mod2.classList.add('locked');
+            mod3.classList.add('locked');
+        }
     }
 
     function processarRegras() {
-        const r = REGRAS[document.getElementById('fedCodeSelect').value];
-        if (!r) return;
+        const codSelecionado = document.getElementById('fedCodeSelect').value;
+        const r = REGRAS[codSelecionado];
+        
+        if (!r) {
+            // Se não tiver código selecionado, reseta os status para NÃO
+            ['stISS', 'stIRRF', 'stPCC', 'stINSS'].forEach(id => setSt(id, false));
+            return;
+        }
 
-        // REGRA DE EXIBIÇÃO: ISS
+        // 1. ISS
         setSt('stISS', r.iss === "S");
         
-        // REGRA DE EXIBIÇÃO: IRRF (NUNCA retém se for Condomínio)
-        const podeReterIR = (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0);
-        setSt('stIRRF', podeReterIR);
+        // 2. IRRF: REGRA MESTRA -> Se for Condomínio, SEMPRE é NÃO. Se for Empresa, olha o regime e a regra do código.
+        const deveReterIR = (tomador !== "CONDOMINIO" && regimePrestador !== "SIMPLES" && r.ir > 0);
+        setSt('stIRRF', deveReterIR);
 
-        // REGRA DE EXIBIÇÃO: PCC
+        // 3. PCC (Seguindo a mesma lógica do IR para Simples)
         setSt('stPCC', (regimePrestador !== "SIMPLES" && r.pcc > 0));
 
-        // REGRA DE EXIBIÇÃO: INSS
+        // 4. INSS
         setSt('stINSS', r.inss > 0);
 
         document.getElementById('areaISS').className = (r.iss === "S") ? "" : "hidden";
@@ -150,6 +156,7 @@
 
     function setSt(id, v) { 
         const e = document.getElementById(id); 
+        if(!e) return;
         e.innerText = v ? "SIM" : "NÃO"; 
         e.className = "tax-status " + (v ? "status-sim" : "status-nao"); 
     }
@@ -162,20 +169,17 @@
         let vISS = (r.iss === "S") ? vBruto * (parseFloat(document.getElementById('aliqISS').value)/100) : 0;
         let vINSS = (r.inss > 0) ? vBruto * (r.inss/100) : 0;
         
-        // CÁLCULO IR: Zera se for Condomínio
-        let vIR = (regimePrestador !== "SIMPLES" && tomador !== "CONDOMINIO" && r.ir > 0) ? vBruto * (r.ir/100) : 0;
+        // CÁLCULO IR: Acompanha a regra visual do Módulo 2
+        let vIR = (tomador !== "CONDOMINIO" && regimePrestador !== "SIMPLES" && r.ir > 0) ? vBruto * (r.ir/100) : 0;
         
-        let vPIS = 0, vCOFINS = 0, vCSLL = 0, vPCC = 0;
+        let vPCC = 0;
         if (regimePrestador !== "SIMPLES" && r.pcc > 0) {
-            vPIS = vBruto * 0.0065; vCOFINS = vBruto * 0.03; vCSLL = vBruto * 0.01; vPCC = vPIS + vCOFINS + vCSLL;
+            vPCC = vBruto * 0.0465;
         }
 
         document.getElementById('valISS').innerText = fmt(vISS);
         document.getElementById('valINSS').innerText = fmt(vINSS);
         document.getElementById('valIR').innerText = fmt(vIR);
-        document.getElementById('valPIS').innerText = fmt(vPIS);
-        document.getElementById('valCOFINS').innerText = fmt(vCOFINS);
-        document.getElementById('valCSLL').innerText = fmt(vCSLL);
         document.getElementById('valPCC').innerText = fmt(vPCC);
         document.getElementById('vLiquido').innerText = fmt(vBruto - (vISS + vINSS + vIR + vPCC));
         document.getElementById('resSim').classList.remove('hidden');
@@ -183,26 +187,15 @@
 
     function solicitarCodigo() {
         const nome = prompt("Qual o seu nome?");
-        if (!nome) return;
-        const municipio = prompt("Qual o município do prestador?");
-        if (!municipio) return;
-        const cod = prompt("Qual código de serviço deseja incluir?");
-        if (!cod) return;
-
-        const seuWhatsapp = "5511999999999"; 
-        const msg = `Olá! Gostaria de solicitar a inclusão de um código de serviço.%0A%0A` +
-                    `*Solicitante:* ${nome}%0A` +
-                    `*Município:* ${municipio}%0A` +
-                    `*Código:* ${cod}`;
-        window.open(`https://api.whatsapp.com/send?phone=${seuWhatsapp}&text=${msg}`, '_blank');
-    }
-
-    function novaConsulta() {
-        if(confirm("Deseja limpar todos os campos para uma nova consulta?")) {
-            location.reload();
+        const mun = prompt("Qual o município?");
+        const cod = prompt("Qual código?");
+        if (nome && mun && cod) {
+            const msg = `Solicitação: ${nome} | Município: ${mun} | Código: ${cod}`;
+            window.open(`https://api.whatsapp.com/send?phone=5511999999999&text=${encodeURIComponent(msg)}`, '_blank');
         }
     }
 
+    function novaConsulta() { location.reload(); }
     function fmt(v) { return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
     
     inicializar();
