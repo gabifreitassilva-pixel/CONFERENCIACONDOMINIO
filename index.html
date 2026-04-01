@@ -25,7 +25,7 @@
 </head>
 <body class="font-sans selection:bg-orange-500/30 p-2 md:p-4 flex flex-col h-screen text-white">
 
-    <!-- ADMIN PROTEGIDO -->
+    <!-- ADMIN PROTEGIDO (SENHA: admin123) -->
     <footer class="fixed bottom-4 right-4 opacity-30 hover:opacity-100 cursor-pointer transition-opacity z-50">
         <button id="btnOpenAdmin" class="p-2.5 bg-gray-900 border border-gray-700 rounded-full shadow-xl hover:border-orange-500 transition-all text-white">
             <i data-lucide="settings" class="w-5 h-5"></i>
@@ -39,14 +39,14 @@
                 <i data-lucide="shield-check" class="text-[#050505] w-6 h-6"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold text-white tracking-tight leading-none uppercase">TaxAudit <span class="text-orange-500">Pro</span></h1>
-                <p class="text-[9px] text-white font-bold uppercase tracking-[0.2em] mt-1 opacity-80">Conferência Fiscal & Auditoria Digital</p>
+                <h1 class="text-xl font-bold text-white tracking-tight leading-none uppercase tracking-tighter">TaxAudit <span class="text-orange-500">Pro</span></h1>
+                <p class="text-[9px] text-white font-bold uppercase tracking-[0.2em] mt-1 opacity-80">Conferência Fiscal & Banco de Regras Git</p>
             </div>
         </div>
         <div class="flex items-center gap-4">
             <div id="statusNuvem" class="flex items-center gap-2 text-[9px] font-bold bg-gray-900 px-3 py-1 rounded-full border border-gray-800 text-white shadow-sm">
                 <div id="statusDot" class="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></div>
-                <span id="statusText">SINCRONIZANDO...</span>
+                <span id="statusText">SINCRONIZANDO GIST...</span>
             </div>
             <button onclick="window.location.reload()" class="text-[10px] font-bold text-gray-200 hover:text-white uppercase flex items-center gap-2 transition-colors">
                 <i data-lucide="refresh-cw" class="w-3 h-3"></i> Nova Consulta
@@ -56,7 +56,7 @@
 
     <main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 overflow-hidden">
         
-        <!-- COLUNA ESQUERDA: INPUTS -->
+        <!-- COLUNA ESQUERDA: ENTRADA -->
         <div class="lg:col-span-5 flex flex-col gap-4 overflow-y-auto custom-scroll pr-1 pb-4">
             
             <div class="bg-[#111111] rounded-2xl p-5 border border-gray-800 shadow-xl shrink-0">
@@ -109,7 +109,7 @@
                     <div>
                         <label class="block text-[10px] font-bold text-white mb-1.5 uppercase tracking-wider">Código Federal (LC 116/03)</label>
                         <select id="codigoServico" class="w-full bg-[#080808] border border-gray-700 rounded-lg px-3 py-2 text-xs text-white focus:border-orange-500 outline-none appearance-none cursor-pointer">
-                            <option value="" disabled selected>Aguardando preenchimento...</option>
+                            <option value="" disabled selected>Carregando banco de dados...</option>
                         </select>
                         <button id="btnSolicitarCodigo" class="mt-2 w-full text-center text-[9px] text-yellow-500 hover:text-yellow-400 border border-yellow-600/30 hover:bg-yellow-500/10 py-1.5 rounded-lg transition-colors flex justify-center items-center gap-2 uppercase font-black tracking-widest">
                             <i data-lucide="message-circle" class="w-3 h-3"></i> Solicitar novo código
@@ -118,14 +118,14 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div id="containerAliqISS" class="opacity-30 pointer-events-none transition-all">
                             <label class="block text-[10px] font-bold text-green-500 mb-1.5 uppercase font-mono tracking-wider">Aliq. ISS (%)</label>
-                            <input type="number" step="0.01" id="aliqISS" value="5.00" class="w-full bg-[#080808] border border-green-500/30 rounded-lg px-3 py-2 text-sm text-white outline-none">
+                            <input type="number" step="0.01" id="aliqISS" value="5.00" class="w-full bg-[#080808] border border-green-500/30 rounded-lg px-3 py-2 text-sm text-white outline-none font-bold">
                         </div>
                         <div id="containerDeducao" class="opacity-30 pointer-events-none transition-all">
-                            <label class="block text-[10px] font-bold text-yellow-500 mb-1.5 uppercase flex justify-between items-center tracking-wider">
+                            <label class="block text-[10px] font-bold text-yellow-500 mb-1.5 uppercase flex justify-between items-center tracking-wider font-black">
                                 Dedução (R$)
                                 <button id="btnToggleSimulador" class="hidden-el text-[8px] bg-yellow-500/10 text-yellow-500 px-1.5 rounded border border-yellow-500/20 hover:bg-yellow-500/20 transition-all font-black">SIMULADOR</button>
                             </label>
-                            <input type="text" id="valorMaterial" class="w-full bg-[#080808] border border-yellow-500/20 rounded-lg px-3 py-2 text-sm text-white outline-none font-mono" placeholder="0,00">
+                            <input type="text" id="valorMaterial" class="w-full bg-[#080808] border border-yellow-500/20 rounded-lg px-3 py-2 text-sm text-white outline-none font-mono font-bold" placeholder="0,00">
                         </div>
                     </div>
                     <div id="simuladorDeducao" class="hidden-el bg-gray-900/50 border border-yellow-500/20 rounded-xl p-3 slide-in">
@@ -193,7 +193,7 @@
                     <div class="bg-orange-500/20 p-3 rounded-full shadow-lg"><i data-lucide="shield-question" class="text-orange-500 w-7 h-7"></i></div>
                     <div>
                         <h3 class="text-2xl font-black text-white uppercase tracking-tighter">Análise Técnica Previdenciária</h3>
-                        <p class="text-[10px] text-white uppercase font-bold tracking-[0.2em] mt-1 opacity-80">IN RFB 2110/2022</p>
+                        <p class="text-[10px] text-white uppercase font-bold tracking-[0.2em] mt-1 opacity-80">CONFORMIDADE OBRIGATÓRIA IN RFB 2110/2022</p>
                     </div>
                 </div>
                 <div id="modalStepText" class="text-[10px] font-black text-orange-500 bg-orange-500/10 px-4 py-2 rounded-full border border-orange-500/20 uppercase tracking-widest shadow-inner">Auditoria Crítica</div>
@@ -203,27 +203,31 @@
                 <h4 id="modalQuestion" class="text-3xl font-black text-white mb-10 text-center leading-tight"></h4>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10 text-white font-medium">
-                    <!-- BLOCO SIM -->
+                    <!-- BLOCO SIM (CARACTERIZA RETENÇÃO) -->
                     <div class="bg-[#1c1c1c] rounded-[2rem] border border-green-500/20 p-8 flex flex-col h-full hover:bg-[#222222] transition-all group">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="bg-green-500/20 p-2.5 rounded-xl border border-green-500/30"><i data-lucide="check-circle" class="text-green-500 w-6 h-6"></i></div>
                             <span class="text-xl font-black text-green-500 uppercase tracking-widest decoration-green-500/30 underline-offset-8 underline">SIM, HÁ RETENÇÃO</span>
                         </div>
-                        <div id="modalDetailSim" class="text-sm text-white leading-relaxed space-y-5 flex-1 font-bold italic"></div>
+                        <div id="modalDetailSim" class="text-sm text-white leading-relaxed space-y-5 flex-1 font-bold italic">
+                            <!-- Inserido via JS -->
+                        </div>
                         <div class="mt-8 pt-6 border-t border-gray-800 flex items-center gap-2 text-[10px] font-black text-green-500 uppercase tracking-widest">
-                            <i data-lucide="shield-check" class="w-4 h-4"></i> Desconto de 11% será aplicado
+                            <i data-lucide="shield-check" class="w-4 h-4"></i> DESCONTO DE 11% SERÁ APLICADO NO CÁLCULO
                         </div>
                     </div>
 
-                    <!-- BLOCO NÃO -->
+                    <!-- BLOCO NÃO (DISPENSA RETENÇÃO) -->
                     <div class="bg-[#1c1c1c] rounded-[2rem] border border-red-500/20 p-8 flex flex-col h-full hover:bg-[#222222] transition-all group">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="bg-red-500/20 p-2.5 rounded-xl border border-red-500/30"><i data-lucide="x-circle" class="text-red-500 w-6 h-6"></i></div>
                             <span class="text-xl font-black text-red-500 uppercase tracking-widest decoration-red-500/30 underline-offset-8 underline">NÃO, É ISENTO</span>
                         </div>
-                        <div id="modalDetailNao" class="text-sm text-white leading-relaxed space-y-5 flex-1 font-bold italic"></div>
+                        <div id="modalDetailNao" class="text-sm text-white leading-relaxed space-y-5 flex-1 font-bold italic">
+                            <!-- Inserido via JS -->
+                        </div>
                         <div class="mt-8 pt-6 border-t border-gray-800 flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-widest">
-                            <i data-lucide="shield-alert" class="w-4 h-4"></i> Valor Integral (Sem Desconto)
+                            <i data-lucide="shield-alert" class="w-4 h-4"></i> VALOR DA NOTA SERÁ PAGO INTEGRALMENTE
                         </div>
                     </div>
                 </div>
@@ -290,7 +294,6 @@
 
         async function loadRegras() {
             try {
-                // Forçando o GitHub a ignorar o cache com timestamp
                 const url = `${GIST_URL}?t=${new Date().getTime()}`;
                 const res = await fetch(url);
                 if(res.ok) {
@@ -344,7 +347,7 @@
 
             document.getElementById('codMunicipal').addEventListener('input', (e) => {
                 const codM = e.target.value.trim();
-                const cidade = state.municipio.toUpperCase();
+                const cidade = (state.municipio || "").toUpperCase();
                 if(REGRAS_DATA.conversoes && REGRAS_DATA.conversoes[cidade]) {
                     const codF = REGRAS_DATA.conversoes[cidade][codM];
                     if(codF) {
@@ -364,7 +367,7 @@
                 if(rawInss > 0) {
                     const isObra = cod.startsWith('07');
                     const instrucao = isObra ? {
-                        q: "A Empreitada é TOTAL?",
+                        q: "A Empreitada contratada é TOTAL?",
                         sim: `<p>• <b>OBRA PARCIAL:</b> Você contratou apenas uma etapa (pintura, gesso, etc).</p><p>• <b>MATRÍCULA CNO:</b> Está no seu nome (Tomador).</p>`,
                         nao: `<p>• <b>OBRA TOTAL:</b> Prestador assumiu toda a obra sob responsabilidade dele.</p><p>• <b>MATRÍCULA CNO:</b> Está no nome do <b>PRESTADOR</b>.</p>`,
                         tip: "Nota de obra: Clique em SIM para reter os 11% se for parcial."
@@ -387,9 +390,9 @@
                 const cod = document.getElementById('codigoServico').value;
                 const r = REGRAS_DATA[cod];
                 const permiteD = permitidosDeducao.includes(cod);
-                document.getElementById('containerAliqISS').classList.toggle('opacity-30', r.iss !== "S");
-                document.getElementById('containerAliqISS').classList.toggle('pointer-events-none', r.iss !== "S");
-                document.getElementById('aliqISS').disabled = (r.iss !== "S");
+                document.getElementById('containerAliqISS').classList.toggle('opacity-30', (r.iss || "").toString().trim() !== "S");
+                document.getElementById('containerAliqISS').classList.toggle('pointer-events-none', (r.iss || "").toString().trim() !== "S");
+                document.getElementById('aliqISS').disabled = ((r.iss || "").toString().trim() !== "S");
                 document.getElementById('containerDeducao').classList.toggle('opacity-30', !permiteD);
                 document.getElementById('containerDeducao').classList.toggle('pointer-events-none', !permiteD);
                 document.getElementById('btnToggleSimulador').classList.toggle('hidden-el', !permiteD);
@@ -421,27 +424,34 @@
             let imps = [];
             
             // ISS
-            if(r.iss === "S") {
+            if((r.iss || "").toString().trim() === "S") {
                 const aliq = parseFloat(document.getElementById('aliqISS').value) || 0;
                 imps.push({n:'ISS', r:true, v:vBruto * (aliq/100), f:'Retenção Local (LC 116).', b:vBruto, a:aliq});
             } else imps.push({n:'ISS', r:false, v:0, f:'Imposto devido no município do prestador.'});
 
-            // INSS (LOGICA CORRIGIDA)
+            // INSS
             const taxInss = parseFloat(r.inss) || 0;
             if(taxInss > 0 && state.reterInssConfirmado) {
                 const base = Math.max(0, vBruto - vDed);
                 imps.push({n:'INSS', r:true, v:base * (taxInss/100), f:'Retenção Previdenciária IN 2110.', b:base, a:taxInss, d:vDed, br:vBruto});
             } else {
-                let msg = (taxInss === 0) ? 'Serviço não sujeito a INSS.' : 'Dispensado por falta de enquadramento legal.';
+                let msg = (taxInss === 0) ? 'Serviço não sujeito a INSS.' : 'Dispensado: Falta de requisitos legais de retenção.';
                 imps.push({n:'INSS', r:false, v:0, f:msg});
             }
 
-            // IRRF / PCC
-            let retIR = r.ir > 0 && state.regime === 'normal' && tom === 'PJ';
-            if(retIR) { imps.push({n:'IRRF', r:true, v:vBruto * (r.ir/100), f:'Art. 714 RIR/2018.', b:vBruto, a:r.ir}); }
-            else imps.push({n:'IRRF', r:false, v:0, f:'Isento ou Condomínio não retém.'});
+            // IRRF
+            const taxIr = parseFloat(r.ir) || 0;
+            let retIR = taxIr > 0 && state.regime === 'normal' && tom === 'PJ';
+            if(retIR) {
+                const v = vBruto * (taxIr/100);
+                if(v < 10) retIR = false;
+                else imps.push({n:'IRRF', r:true, v:v, f:'Art. 714 RIR/2018.', b:vBruto, a:taxIr});
+            }
+            if(!retIR) imps.push({n:'IRRF', r:false, v:0, f:tom==='CONDOMINIO'?'Condomínio não retém IRRF.':'Isento ou Valor < R$ 10.'});
 
-            let retPCC = r.pcc > 0 && state.regime === 'normal' && tom !== 'CONDOMINIO';
+            // PCC
+            const taxPcc = parseFloat(r.pcc) || 0;
+            let retPCC = taxPcc > 0 && state.regime === 'normal' && tom !== 'CONDOMINIO';
             if(retPCC) {
                 const aliq = tom === 'ORGAO_PUBLICO' ? 5.85 : 4.65;
                 imps.push({n:'PIS/COFINS/CSLL', r:true, v:vBruto * (aliq/100), f:'Regra Lei 10.833.', b:vBruto, a:aliq});
@@ -463,12 +473,12 @@
                 const div = document.createElement('div');
                 div.className = `p-4 flex justify-between items-start border-b border-gray-800 transition-colors ${i.r ? 'bg-orange-500/[0.03]' : ''}`;
                 let calc = i.r && i.b ? `<div class="mt-2 font-mono text-[10px] text-white bg-black/80 p-2.5 rounded border border-gray-700 uppercase tracking-tighter">
-                    <span class="text-orange-500 mr-2 font-black">MEMÓRIA DE CÁLCULO:</span> ${i.d > 0 ? '('+i.br.toLocaleString('pt-BR')+' - '+i.d.toLocaleString('pt-BR')+')' : i.b.toLocaleString('pt-BR')} x ${i.a}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                    <span class="text-orange-500 mr-2 font-black">MEMÓRIA DE CÁLCULO:</span> ${i.d > 0 ? '(R$ '+i.br.toLocaleString('pt-BR')+' - R$ '+i.d.toLocaleString('pt-BR')+')' : 'R$ '+i.b.toLocaleString('pt-BR')} x ${i.a}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
                 </div>` : '';
                 div.innerHTML = `<div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1.5"><span class="text-[7px] font-black px-2 py-0.5 rounded ${i.r ? 'bg-orange-600 text-black':'bg-gray-800 text-white'}">${i.r?'RETÉM':'ISENTO'}</span><span class="text-xs font-black text-white uppercase">${i.n}</span></div>
-                    <p class="text-[10px] text-white font-bold mb-1 opacity-100">${i.f}</p>${calc}
-                </div><span class="text-sm font-bold text-white font-mono ml-4">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>`;
+                    <div class="flex items-center gap-2 mb-1.5"><span class="text-[7px] font-black px-2 py-0.5 rounded ${i.r ? 'bg-orange-600 text-black font-black':'bg-gray-800 text-white'}">${i.r?'RETÉM':'ISENTO'}</span><span class="text-xs font-black text-white uppercase tracking-widest">${i.n}</span></div>
+                    <p class="text-[10px] text-white font-bold mb-1 opacity-100 font-medium">${i.f}</p>${calc}
+                </div><span class="text-sm font-bold text-white font-mono ml-4 shrink-0">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>`;
                 container.appendChild(div);
             });
             lucide.createIcons();
@@ -494,8 +504,8 @@
             else if(cod && cod.startsWith('07')) bts = [{p:50, l:'Obra Geral'}, {p:90, l:'Pavimentação'}];
             bts.forEach(b => {
                 const btn = document.createElement('button');
-                btn.className = "bg-[#080808] hover:bg-orange-600 border border-gray-800 p-2.5 rounded-xl transition-all text-left";
-                btn.innerHTML = `<span class="block text-[7px] text-white font-black">DEDUÇÃO ${b.p}%</span><span class="text-[9px] font-bold text-white">${b.l}</span>`;
+                btn.className = "bg-[#080808] border border-gray-700 hover:bg-orange-600 text-white p-2.5 rounded-xl transition-all text-left group";
+                btn.innerHTML = `<span class="block text-[7px] text-white font-black group-hover:text-black">DEDUÇÃO ${b.p}%</span><span class="text-[9px] font-bold text-white group-hover:text-black">${b.l}</span>`;
                 btn.onclick = () => {
                     state.valorMaterial = state.valorTotal * (b.p/100);
                     document.getElementById('valorMaterial').value = state.valorMaterial.toLocaleString('pt-BR', {minimumFractionDigits:2});
@@ -503,15 +513,6 @@
                 container.appendChild(btn);
             });
         }
-
-        document.getElementById('btnOpenAdmin').onclick = () => { if(prompt("Senha:")===ADMIN_PASS) document.getElementById('adminPanel').classList.remove('hidden-el'); };
-        document.getElementById('btnCloseAdmin').onclick = () => document.getElementById('adminPanel').classList.add('hidden-el');
-        document.getElementById('btnGerarJson').onclick = () => {
-            const c = document.getElementById('adminCod').value; if(!c) return;
-            const obj = { [c]: { desc: document.getElementById('adminDesc').value, iss: document.getElementById('adminISS').checked ? "S" : "N", ir: document.getElementById('adminIR').checked ? 1.5 : 0, inss: document.getElementById('adminINSS').checked ? 11 : 0, pcc: document.getElementById('adminPCC').checked ? 4.65 : 0 } };
-            document.getElementById('adminOutput').value = JSON.stringify(obj, null, 2);
-            document.getElementById('adminOutput').classList.remove('hidden-el');
-        };
 
         init();
     </script>
