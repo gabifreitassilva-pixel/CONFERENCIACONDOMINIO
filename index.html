@@ -15,15 +15,16 @@
         .hidden-el { display: none !important; }
         .glass { background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(15px); }
         
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #ff6600; }
         
-        html, body { height: 100%; overflow: hidden; background-color: #050505; color: #ffffff; }
+        /* Removido o overflow: hidden para permitir a rolagem natural da página */
+        html, body { background-color: #050505; color: #ffffff; }
     </style>
 </head>
-<body class="font-sans selection:bg-orange-500/30 p-2 md:p-4 flex flex-col h-screen text-white">
+<body class="font-sans selection:bg-orange-500/30 p-2 md:p-4 flex flex-col min-h-screen text-white custom-scroll">
 
     <!-- ADMIN PROTEGIDO -->
     <footer class="fixed bottom-4 right-4 opacity-30 hover:opacity-100 cursor-pointer transition-opacity z-50">
@@ -33,7 +34,7 @@
     </footer>
 
     <!-- HEADER -->
-    <header class="max-w-7xl mx-auto w-full mb-4 flex items-center justify-between border-b border-gray-800 pb-3 shrink-0">
+    <header class="max-w-7xl mx-auto w-full mb-6 flex items-center justify-between border-b border-gray-800 pb-4 shrink-0 mt-2">
         <div class="flex items-center gap-3">
             <div class="bg-gradient-to-br from-orange-500 to-orange-700 p-2 rounded-xl shadow-lg shadow-orange-900/20">
                 <i data-lucide="shield-check" class="text-[#050505] w-6 h-6"></i>
@@ -54,12 +55,12 @@
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 overflow-hidden">
+    <main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 pb-12">
         
         <!-- COLUNA ESQUERDA: ENTRADA -->
-        <div class="lg:col-span-5 flex flex-col gap-4 overflow-y-auto custom-scroll pr-1 pb-4">
+        <div class="lg:col-span-5 flex flex-col gap-6">
             
-            <div class="bg-[#111111] rounded-2xl p-5 border border-gray-800 shadow-xl shrink-0">
+            <div class="bg-[#111111] rounded-2xl p-5 border border-gray-800 shadow-xl">
                 <h2 class="text-[11px] font-bold text-orange-500 uppercase tracking-widest flex items-center gap-2 mb-4 border-b border-gray-800/50 pb-2">
                     <i data-lucide="building" class="w-3.5 h-3.5"></i> 1. Identificação
                 </h2>
@@ -67,7 +68,7 @@
                     <div>
                         <label class="block text-[10px] font-bold text-white mb-1.5 uppercase tracking-wider">CNPJ do Prestador</label>
                         <div class="flex gap-2">
-                            <input type="text" id="cnpjPrestador" class="flex-1 bg-[#080808] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:border-orange-500 outline-none transition-all font-mono" placeholder="00.000.000/0000-00">
+                            <input type="text" id="cnpjPrestador" class="flex-1 bg-[#080808] border border-gray-700 rounded-lg px-3 py-3 text-sm text-white focus:border-orange-500 outline-none transition-all font-mono" placeholder="00.000.000/0000-00">
                             <button id="btnBuscarCnpj" class="bg-orange-600 hover:bg-orange-500 text-white px-4 rounded-lg font-bold transition-all flex items-center justify-center min-w-[48px]">
                                 <i data-lucide="search" class="w-4 h-4"></i>
                             </button>
@@ -82,7 +83,7 @@
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-white mb-1.5 uppercase tracking-wider">Perfil do Tomador</label>
-                        <select id="tomador" class="w-full bg-[#080808] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:border-orange-500 outline-none appearance-none cursor-pointer">
+                        <select id="tomador" class="w-full bg-[#080808] border border-gray-700 rounded-lg px-3 py-3 text-sm text-white focus:border-orange-500 outline-none appearance-none cursor-pointer">
                             <option value="PJ">Empresa Privada (PJ)</option>
                             <option value="CONDOMINIO">Condomínio</option>
                             <option value="ORGAO_PUBLICO">Órgão Público</option>
@@ -91,7 +92,7 @@
                 </div>
             </div>
 
-            <div class="bg-[#111111] rounded-2xl p-5 border border-gray-800 shadow-xl shrink-0">
+            <div class="bg-[#111111] rounded-2xl p-5 border border-gray-800 shadow-xl">
                 <h2 class="text-[11px] font-bold text-orange-500 uppercase tracking-widest flex items-center gap-2 mb-4 border-b border-gray-800/50 pb-2">
                     <i data-lucide="file-text" class="w-3.5 h-3.5"></i> 2. Detalhes da Nota
                 </h2>
@@ -99,97 +100,116 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-[10px] font-bold text-white mb-1.5 uppercase font-mono tracking-wider">Cód. Municipal</label>
-                            <input type="text" id="codMunicipal" class="w-full bg-[#080808] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:border-orange-500 outline-none font-mono" placeholder="De/Para Automático">
+                            <input type="text" id="codMunicipal" class="w-full bg-[#080808] border border-gray-700 rounded-lg px-3 py-3 text-sm text-white focus:border-orange-500 outline-none font-mono" placeholder="De/Para Automático">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-white mb-1.5 uppercase tracking-wider">Valor Bruto (R$)</label>
-                            <input type="text" id="valorTotal" class="w-full bg-[#080808] border border-gray-700 rounded-lg px-3 py-2 text-sm text-green-400 font-bold focus:border-orange-500 outline-none font-mono" placeholder="0,00">
+                            <input type="text" id="valorTotal" class="w-full bg-[#080808] border border-gray-700 rounded-lg px-3 py-3 text-sm text-green-400 font-bold focus:border-orange-500 outline-none font-mono" placeholder="0,00">
                         </div>
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-white mb-1.5 uppercase tracking-wider">Código Federal (LC 116/03)</label>
-                        <select id="codigoServico" class="w-full bg-[#080808] border border-gray-700 rounded-lg px-3 py-2 text-xs text-white focus:border-orange-500 outline-none appearance-none cursor-pointer">
+                        <select id="codigoServico" class="w-full bg-[#080808] border border-gray-700 rounded-lg px-3 py-3 text-xs text-white focus:border-orange-500 outline-none appearance-none cursor-pointer">
                             <option value="" disabled selected>Aguardando preenchimento...</option>
                         </select>
-                        <button id="btnSolicitarCodigo" class="mt-2 w-full text-center text-[9px] text-yellow-500 hover:text-yellow-400 border border-yellow-600/30 hover:bg-yellow-500/10 py-1.5 rounded-lg transition-colors flex justify-center items-center gap-2 uppercase font-black tracking-widest">
+                        <button id="btnSolicitarCodigo" class="mt-2 w-full text-center text-[9px] text-yellow-500 hover:text-yellow-400 border border-yellow-600/30 hover:bg-yellow-500/10 py-2 rounded-lg transition-colors flex justify-center items-center gap-2 uppercase font-black tracking-widest">
                             <i data-lucide="message-circle" class="w-3 h-3"></i> Solicitar novo código
                         </button>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div id="containerAliqISS" class="opacity-30 pointer-events-none transition-all">
                             <label class="block text-[10px] font-bold text-green-500 mb-1.5 uppercase font-mono tracking-wider">Aliq. ISS (%)</label>
-                            <input type="number" step="0.01" id="aliqISS" value="5.00" class="w-full bg-[#080808] border border-green-500/30 rounded-lg px-3 py-2 text-sm text-white outline-none font-bold">
+                            <input type="number" step="0.01" id="aliqISS" value="5.00" class="w-full bg-[#080808] border border-green-500/30 rounded-lg px-3 py-3 text-sm text-white outline-none font-bold">
                         </div>
                         <div id="containerDeducao" class="opacity-30 pointer-events-none transition-all">
                             <label class="block text-[10px] font-bold text-yellow-500 mb-1.5 uppercase flex justify-between items-center tracking-wider font-black">
                                 Dedução (R$)
-                                <button id="btnToggleSimulador" class="hidden-el text-[8px] bg-yellow-500/10 text-yellow-500 px-1.5 rounded border border-yellow-500/20 hover:bg-yellow-500/20 transition-all font-black">SIMULADOR</button>
+                                <button id="btnToggleSimulador" class="hidden-el text-[8px] bg-yellow-500/10 text-yellow-500 px-1.5 py-0.5 rounded border border-yellow-500/20 hover:bg-yellow-500/20 transition-all font-black">SIMULADOR</button>
                             </label>
-                            <input type="text" id="valorMaterial" class="w-full bg-[#080808] border border-yellow-500/20 rounded-lg px-3 py-2 text-sm text-white outline-none font-mono font-bold" placeholder="0,00">
+                            <input type="text" id="valorMaterial" class="w-full bg-[#080808] border border-yellow-500/20 rounded-lg px-3 py-3 text-sm text-white outline-none font-mono font-bold" placeholder="0,00">
                         </div>
                     </div>
-                    <div id="simuladorDeducao" class="hidden-el bg-gray-900/50 border border-yellow-500/20 rounded-xl p-3 slide-in">
-                        <div id="simuladorBotoes" class="grid grid-cols-2 gap-2"></div>
+                    
+                    <!-- SIMULADOR COM ESPAÇO PARA EXPANDIR E EXPLICAÇÃO DA LEI -->
+                    <div id="simuladorDeducao" class="hidden-el bg-[#151515] border border-yellow-500/30 rounded-xl p-4 mt-2 slide-in">
+                        <div class="flex items-center gap-2 text-yellow-500 mb-2">
+                            <i data-lucide="scale" class="w-4 h-4"></i>
+                            <h4 class="font-bold text-xs uppercase tracking-widest">Validador de Presunção (IN RFB 2110/22)</h4>
+                        </div>
+                        <p class="text-[11px] text-gray-400 mb-4 leading-relaxed">
+                            Conforme os <strong>Arts. 117 e 118 da IN RFB 2110/22</strong>, se o prestador não fornecer notas fiscais que comprovem o custo exato do material/equipamento, a lei fixa uma <strong>Base de Cálculo Mínima</strong>, o que nos dá as seguintes presunções de DEDUÇÃO:
+                        </p>
+                        
+                        <div id="simuladorBotoes" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                        
+                        <p id="simuladorAviso" class="text-[10px] text-yellow-500/70 mt-3 text-center italic">
+                            Clique em um botão acima para calcular e aplicar o valor automaticamente no campo de Dedução.
+                        </p>
+                        
+                        <div id="simuladorNaoAplicavel" class="hidden-el bg-[#121212] border border-gray-700 p-3 rounded-lg text-xs text-gray-400 text-center">
+                            A presunção automática não cobre este serviço de forma padrão. Insira o valor exato comprovado em nota fiscal de material/equipamento.
+                        </div>
                     </div>
-                    <button id="btnExecutarAuditoria" class="w-full mt-2 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-[#050505] font-black py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] uppercase tracking-widest text-[10px] flex items-center justify-center gap-2">
-                        <i data-lucide="shield-check" class="w-4 h-4"></i> Executar Auditoria Fiscal
+                    
+                    <button id="btnExecutarAuditoria" class="w-full mt-4 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-[#050505] font-black py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] uppercase tracking-widest text-xs flex items-center justify-center gap-2">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i> Executar Auditoria Fiscal
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- COLUNA DIREITA: RESULTADOS -->
-        <div class="lg:col-span-7 flex flex-col gap-4 overflow-hidden h-full">
+        <div class="lg:col-span-7 flex flex-col gap-6">
             
-            <div id="waitingState" class="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#111111] border border-gray-800 rounded-2xl border-dashed">
-                <div class="bg-[#181818] p-8 rounded-full mb-4 border border-gray-800 shadow-inner">
-                    <i data-lucide="file-search" class="text-white opacity-40 w-12 h-12"></i>
+            <div id="waitingState" class="flex flex-col items-center justify-center text-center p-12 bg-[#111111] border border-gray-800 rounded-2xl border-dashed h-full min-h-[500px]">
+                <div class="bg-[#181818] p-8 rounded-full mb-6 border border-gray-800 shadow-inner">
+                    <i data-lucide="file-search" class="text-white opacity-40 w-16 h-16"></i>
                 </div>
-                <h3 class="text-base font-bold text-white mb-2 uppercase tracking-widest">Aguardando Parâmetros</h3>
-                <p class="text-white opacity-60 text-[9px] max-w-xs leading-relaxed uppercase tracking-widest text-center">Preencha os dados e execute a auditoria para visualizar o parecer.</p>
+                <h3 class="text-lg font-bold text-white mb-3 uppercase tracking-widest">Aguardando Parâmetros</h3>
+                <p class="text-white opacity-60 text-xs max-w-sm leading-relaxed uppercase tracking-widest text-center">Preencha os dados e execute a auditoria para visualizar o parecer técnico e a memória de cálculo das retenções.</p>
             </div>
 
-            <div id="resultsState" class="hidden-el flex flex-col h-full overflow-hidden fade-in space-y-4 pb-2">
-                <div class="grid grid-cols-2 gap-3 shrink-0">
-                    <div class="bg-[#111111] border border-gray-800 rounded-2xl p-4 relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-14 h-14 bg-gray-800/30 rounded-bl-full transition-transform group-hover:scale-110"></div>
-                        <p class="text-[10px] font-bold text-white uppercase mb-0.5 tracking-widest opacity-80">Valor Bruto NF</p>
-                        <p id="resBruto" class="text-xl font-bold text-white font-mono"></p>
+            <div id="resultsState" class="hidden-el flex flex-col fade-in space-y-6">
+                <div class="grid grid-cols-2 gap-4 shrink-0">
+                    <div class="bg-[#111111] border border-gray-800 rounded-2xl p-5 relative overflow-hidden group shadow-xl">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-gray-800/30 rounded-bl-full transition-transform group-hover:scale-110"></div>
+                        <p class="text-[10px] font-bold text-white uppercase mb-1 tracking-widest opacity-80">Valor Bruto NF</p>
+                        <p id="resBruto" class="text-2xl font-bold text-white font-mono"></p>
                     </div>
-                    <div class="bg-gradient-to-r from-green-800 to-green-600 rounded-2xl p-4 shadow-lg text-white relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-14 h-14 bg-white/10 rounded-bl-full transition-transform group-hover:scale-110"></div>
-                        <p class="text-[10px] font-bold text-white uppercase mb-0.5 tracking-widest opacity-90">Líquido ao Prestador</p>
-                        <p id="resLiquido" class="text-xl font-bold font-mono"></p>
+                    <div class="bg-gradient-to-r from-green-800 to-green-600 rounded-2xl p-5 shadow-xl text-white relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-bl-full transition-transform group-hover:scale-110"></div>
+                        <p class="text-[10px] font-bold text-white uppercase mb-1 tracking-widest opacity-90">Líquido ao Prestador</p>
+                        <p id="resLiquido" class="text-2xl font-bold font-mono"></p>
                     </div>
                 </div>
 
-                <div class="bg-[#111111] border border-gray-800 rounded-2xl flex flex-col flex-1 min-h-0 shadow-2xl">
-                    <div class="p-3 border-b border-gray-800 bg-[#181818] flex justify-between items-center shrink-0">
-                        <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-[0.25em]">Parecer Técnico de Auditoria</h3>
+                <div class="bg-[#111111] border border-gray-800 rounded-2xl flex flex-col shadow-2xl">
+                    <div class="p-4 border-b border-gray-800 bg-[#181818] flex justify-between items-center rounded-t-2xl">
+                        <h3 class="text-[11px] font-black text-orange-500 uppercase tracking-[0.25em]">Parecer Técnico de Auditoria</h3>
                     </div>
                     
-                    <div id="taxesContainer" class="flex-1 overflow-y-auto custom-scroll p-2 bg-[#080808] space-y-2">
+                    <div id="taxesContainer" class="p-3 bg-[#080808] space-y-3">
                         <!-- Gerado via JS -->
                     </div>
 
-                    <div class="p-5 bg-[#111111] border-t border-gray-800 flex justify-between items-center shrink-0">
-                        <span class="text-[11px] font-black text-white uppercase tracking-widest underline decoration-orange-500 decoration-2 underline-offset-4">Total Descontado</span>
-                        <span id="resRetido" class="text-2xl font-bold text-red-500 font-mono"></span>
+                    <div class="p-6 bg-[#111111] border-t border-gray-800 flex justify-between items-center rounded-b-2xl">
+                        <span class="text-xs font-black text-white uppercase tracking-widest underline decoration-orange-500 decoration-2 underline-offset-4">Total Descontado</span>
+                        <span id="resRetido" class="text-3xl font-bold text-red-500 font-mono"></span>
                     </div>
                 </div>
 
-                <div class="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-[9px] font-black uppercase text-center flex items-center justify-center gap-2 shrink-0">
+                <div class="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-2 shadow-lg">
                     <i data-lucide="alert-triangle" class="w-4 h-4"></i> SE DIVERGIR DA NOTA, NÃO PAGUE. ENTRE EM CONTATO COM O FISCAL.
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- MODAL DE ANÁLISE COMPARATIVA -->
+    <!-- MODAL DE ANÁLISE COMPARATIVA SUPER DETALHADO -->
     <div id="auditModal" class="hidden-el fixed inset-0 z-[100] glass flex items-center justify-center p-4">
-        <div class="bg-[#141414] border border-orange-500/20 rounded-[2.5rem] p-6 md:p-10 max-w-5xl w-full shadow-2xl slide-in max-h-[92vh] flex flex-col overflow-hidden text-white">
+        <div class="bg-[#141414] border border-orange-500/20 rounded-[2.5rem] p-6 md:p-10 max-w-6xl w-full shadow-2xl slide-in max-h-[92vh] flex flex-col overflow-hidden text-white">
             
-            <div class="flex items-center justify-between mb-8 border-b border-gray-800 pb-5 shrink-0">
+            <div class="flex items-center justify-between mb-6 border-b border-gray-800 pb-5 shrink-0">
                 <div class="flex items-center gap-4">
                     <div class="bg-orange-500/20 p-3 rounded-full shadow-lg"><i data-lucide="shield-question" class="text-orange-500 w-7 h-7"></i></div>
                     <div>
@@ -201,53 +221,53 @@
             </div>
 
             <div class="flex-1 overflow-y-auto custom-scroll pr-4">
-                <h4 id="modalQuestion" class="text-3xl font-black text-white mb-10 text-center leading-tight"></h4>
+                <h4 id="modalQuestion" class="text-2xl md:text-3xl font-black text-white mb-8 text-center leading-tight"></h4>
                 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10 text-white font-medium">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 text-white font-medium">
                     <!-- BLOCO SIM (CARACTERIZA RETENÇÃO) -->
-                    <div class="bg-[#1c1c1c] rounded-[2rem] border border-green-500/20 p-8 flex flex-col h-full hover:bg-[#222222] transition-all group">
+                    <div class="bg-[#1c1c1c] rounded-[2rem] border border-green-500/20 p-8 flex flex-col h-full hover:bg-[#222222] transition-all group shadow-xl">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="bg-green-500/20 p-2.5 rounded-xl border border-green-500/30"><i data-lucide="check-circle" class="text-green-500 w-6 h-6"></i></div>
                             <span class="text-xl font-black text-green-500 uppercase tracking-widest decoration-green-500/30 underline-offset-8 underline">SIM, HÁ RETENÇÃO</span>
                         </div>
-                        <div id="modalDetailSim" class="text-sm text-white leading-relaxed space-y-5 flex-1 font-bold italic">
+                        <div id="modalDetailSim" class="text-[13px] md:text-sm text-white leading-relaxed flex-1 font-medium">
                             <!-- Inserido via JS -->
                         </div>
-                        <div class="mt-8 pt-6 border-t border-gray-800 flex items-center gap-2 text-[10px] font-black text-green-500 uppercase tracking-widest">
-                            <i data-lucide="shield-check" class="w-4 h-4"></i> DESCONTO DE 11% SERÁ APLICADO NO CÁLCULO
+                        <div class="mt-6 pt-5 border-t border-gray-800 flex items-center gap-2 text-[10px] font-black text-green-500 uppercase tracking-widest">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i> DESCONTO DE 11% DE INSS DEVERÁ SER APLICADO
                         </div>
                     </div>
 
                     <!-- BLOCO NÃO (DISPENSA RETENÇÃO) -->
-                    <div class="bg-[#1c1c1c] rounded-[2rem] border border-red-500/20 p-8 flex flex-col h-full hover:bg-[#222222] transition-all group">
+                    <div class="bg-[#1c1c1c] rounded-[2rem] border border-red-500/20 p-8 flex flex-col h-full hover:bg-[#222222] transition-all group shadow-xl">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="bg-red-500/20 p-2.5 rounded-xl border border-red-500/30"><i data-lucide="x-circle" class="text-red-500 w-6 h-6"></i></div>
                             <span class="text-xl font-black text-red-500 uppercase tracking-widest decoration-red-500/30 underline-offset-8 underline">NÃO, É ISENTO</span>
                         </div>
-                        <div id="modalDetailNao" class="text-sm text-white leading-relaxed space-y-5 flex-1 font-bold italic">
+                        <div id="modalDetailNao" class="text-[13px] md:text-sm text-white leading-relaxed flex-1 font-medium">
                             <!-- Inserido via JS -->
                         </div>
-                        <div class="mt-8 pt-6 border-t border-gray-800 flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-widest">
+                        <div class="mt-6 pt-5 border-t border-gray-800 flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-widest">
                             <i data-lucide="shield-alert" class="w-4 h-4"></i> VALOR DA NOTA SERÁ PAGO INTEGRALMENTE
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-blue-500/10 border border-blue-500/20 p-6 rounded-[1.5rem] mb-6 flex gap-5 items-center shadow-lg">
-                    <div class="p-3 bg-blue-500/20 rounded-full border border-blue-500/30"><i data-lucide="info" class="text-blue-400 w-6 h-6"></i></div>
-                    <p id="modalTip" class="text-xs text-white leading-relaxed font-black uppercase tracking-tight"></p>
+                <div class="bg-blue-500/10 border border-blue-500/20 p-5 rounded-[1.5rem] mb-6 flex gap-5 items-center shadow-lg">
+                    <div class="p-3 bg-blue-500/20 rounded-full border border-blue-500/30 hidden md:block"><i data-lucide="info" class="text-blue-400 w-6 h-6"></i></div>
+                    <p id="modalTip" class="text-xs text-blue-100 leading-relaxed font-bold"></p>
                 </div>
             </div>
 
             <!-- BOTÕES -->
-            <div class="grid grid-cols-2 gap-8 pt-8 border-t border-gray-800 shrink-0">
-                <button onclick="answerModal(true)" class="group bg-green-600 text-white font-black py-7 rounded-[2rem] hover:bg-green-500 transition-all uppercase text-sm tracking-widest shadow-2xl flex flex-col items-center justify-center">
+            <div class="grid grid-cols-2 gap-4 md:gap-8 pt-6 border-t border-gray-800 shrink-0">
+                <button onclick="answerModal(true)" class="group bg-green-600 text-white font-black py-5 md:py-7 rounded-[2rem] hover:bg-green-500 transition-all uppercase text-xs md:text-sm tracking-widest shadow-2xl flex flex-col items-center justify-center text-center px-2">
                     <span>SIM, RETER IMPOSTO</span>
-                    <span class="text-[10px] opacity-70 font-bold group-hover:opacity-100 uppercase tracking-tighter">(Confirmar situação de retenção)</span>
+                    <span class="text-[9px] md:text-[10px] opacity-70 font-bold group-hover:opacity-100 uppercase tracking-tighter mt-1">(Aplicar desconto de 11% INSS)</span>
                 </button>
-                <button onclick="answerModal(false)" class="group bg-gray-900 text-white border border-gray-700 font-black py-7 rounded-[2rem] hover:bg-red-600 hover:text-white hover:border-red-600 transition-all uppercase text-sm tracking-widest shadow-2xl flex flex-col items-center justify-center">
+                <button onclick="answerModal(false)" class="group bg-gray-900 text-white border border-gray-700 font-black py-5 md:py-7 rounded-[2rem] hover:bg-red-600 hover:text-white hover:border-red-600 transition-all uppercase text-xs md:text-sm tracking-widest shadow-2xl flex flex-col items-center justify-center text-center px-2">
                     <span>NÃO, DISPENSAR</span>
-                    <span class="text-[10px] opacity-70 font-bold group-hover:opacity-100 uppercase tracking-tighter">(Serviço Isento)</span>
+                    <span class="text-[9px] md:text-[10px] opacity-70 font-bold group-hover:opacity-100 uppercase tracking-tighter mt-1">(Isentar retenção de INSS)</span>
                 </button>
             </div>
         </div>
@@ -284,7 +304,7 @@
                 <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="adminPCC" class="accent-green-500 w-3.5 h-3.5"> PCC</label>
                 <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="adminIR" class="accent-green-500 w-3.5 h-3.5"> IR</label>
             </div>
-            <button id="btnGerarJson" class="w-full bg-green-600 text-[#050505] font-black py-2 rounded-lg text-[10px] uppercase tracking-widest mb-3">Gerar JSON</button>
+            <button id="btnGerarJson" class="w-full bg-green-600 text-[#050505] font-black py-3 rounded-lg text-[10px] uppercase tracking-widest mb-3">Gerar JSON</button>
             <textarea id="adminOutput" readonly class="hidden-el w-full h-32 bg-black text-green-500 font-mono text-[9px] p-3 rounded-lg border border-gray-800 outline-none"></textarea>
         </div>
     </div>
@@ -313,37 +333,28 @@
                 const res = await fetch(url);
                 if(res.ok) {
                     const data = await res.json();
-                    
                     const fileNames = Object.keys(data.files);
                     let fileContent = data.files[fileNames[0]].content;
                     
-                    // AUTO-CORRETOR DE SINTAXE JSON PARA VÍRGULAS FALTANDO
                     try {
                         REGRAS_DATA = JSON.parse(fileContent);
                     } catch (parseErr) {
-                        console.warn("Erro de sintaxe detectado. Aplicando auto-correção de vírgulas...");
-                        // Substitui } seguido por aspas duplas por }, seguido de aspas duplas
                         fileContent = fileContent.replace(/}\s*"/g, '}, "');
                         REGRAS_DATA = JSON.parse(fileContent);
                     }
                     
                     popularSelect();
-                    
                     document.getElementById('statusText').textContent = "BANCO SINCRONIZADO";
                     document.getElementById('statusDot').className = "w-1.5 h-1.5 bg-green-500 rounded-full";
                 } else {
                     throw new Error("Falha na conexão com o GitHub.");
                 }
             } catch(e) {
-                console.error("Erro no JSON do Gist:", e);
                 document.getElementById('statusText').textContent = "ERRO DE SINTAXE NO GITHUB";
                 document.getElementById('statusDot').className = "w-1.5 h-1.5 bg-red-500 rounded-full";
-                
-                // Dados de segurança para não travar a tela
                 REGRAS_DATA = { "14.01": { "desc": "Limpeza Geral (MODO DE SEGURANÇA)", "iss": "S", "ir": 1.0, "inss": 11, "pcc": 4.65 } };
                 popularSelect();
-                
-                alert("🚨 ERRO DE SINTAXE NO SEU ARQUIVO DO GITHUB 🚨\n\nO sistema tentou corrigir automaticamente, mas o erro persiste.\nDetalhe: " + e.message + "\n\nVerifique se falta alguma vírgula ( , ) ou aspas ( \" ) no seu arquivo 'regras.json'.");
+                alert("🚨 ERRO DE SINTAXE NO SEU ARQUIVO DO GITHUB 🚨\n\nDetalhe: " + e.message + "\n\nVerifique se falta alguma vírgula ou aspas no seu arquivo 'regras.json'.");
             }
         }
 
@@ -409,16 +420,43 @@
                 if(rawInss > 0) {
                     const isObra = cod.startsWith('07');
                     const instrucao = isObra ? {
-                        q: "A Empreitada contratada é TOTAL?",
-                        sim: `<p>• <b>OBRA PARCIAL:</b> Você contratou apenas uma etapa (pintura, gesso, etc).</p><p>• <b>MATRÍCULA CNO:</b> Está no seu nome (Tomador).</p>`,
-                        nao: `<p>• <b>OBRA TOTAL:</b> Prestador assumiu toda a obra sob responsabilidade dele.</p><p>• <b>MATRÍCULA CNO:</b> Está no nome do <b>PRESTADOR</b>.</p>`,
-                        tip: "Nota de obra: Clique em SIM para reter os 11% se for parcial."
+                        q: "A obra foi executada mediante EMPREITADA PARCIAL ou SUBEMPREITADA?",
+                        sim: `
+                            <p class="mb-3 text-gray-300">A <b>Empreitada Parcial</b> ou <b>Subempreitada</b> obriga a retenção de 11% de INSS. Ocorre quando:</p>
+                            <ul class="list-disc pl-5 space-y-2 text-gray-400">
+                                <li><b>Contratação Fragmentada:</b> Você contratou a empresa para uma fase da obra (ex: fundação, pintura).</li>
+                                <li><b>Matrícula CNO (Tomador):</b> A matrícula da obra no INSS está no seu nome ou da sua empresa.</li>
+                            </ul>
+                        `,
+                        nao: `
+                            <p class="mb-3 text-gray-300">A <b>Empreitada Total</b> isenta o tomador do recolhimento de INSS. Ocorre APENAS se:</p>
+                            <ul class="list-disc pl-5 space-y-2 text-gray-400">
+                                <li><b>Contrato Global:</b> O prestador assumiu a execução de <b>TODA</b> a obra.</li>
+                                <li><b>Matrícula CNO (Prestador):</b> O prestador abriu a matrícula no INSS no próprio nome dele.</li>
+                            </ul>
+                        `,
+                        tip: "Na construção civil, a retenção de INSS é regra geral. Só há isenção se provada Empreitada TOTAL com CNO do prestador."
                     } : {
-                        q: "Houve CESSÃO DE MÃO DE OBRA?",
-                        sim: `<p>• <b>DISPOSIÇÃO:</b> Trabalhadores seguem ordens diárias do Tomador.</p><p>• <b>HABITUALIDADE:</b> Equipe fixa instalada no seu local.</p>`,
-                        nao: `<p>• <b>EVENTUAL:</b> Técnico vem, conserta e vai embora.</p><p>• <b>AUTONOMIA:</b> Prestador gere horários sozinho.</p>`,
-                        tip: "Serviços comuns: Retenção de 11% exige equipe cedida à sua disposição."
+                        q: "O serviço foi prestado mediante CESSÃO DE MÃO DE OBRA?",
+                        sim: `
+                            <p class="mb-3 text-gray-300">A <b>Cessão de Mão de Obra</b> obriga a retenção de 11%. Ocorre quando os 3 requisitos são verdadeiros:</p>
+                            <ul class="list-disc pl-5 space-y-2 text-gray-400">
+                                <li><b>Disposição:</b> Os trabalhadores ficam submetidos à sua coordenação (você diz o que vão fazer).</li>
+                                <li><b>Dependências:</b> O serviço é executado nas suas instalações.</li>
+                                <li><b>Habitualidade:</b> O serviço é contínuo (ex: diário, escala fixa), não é um mero conserto.</li>
+                            </ul>
+                        `,
+                        nao: `
+                            <p class="mb-3 text-gray-300">O <b>Serviço Eventual ou Isolado</b> não retém 11% de INSS. Ocorre quando:</p>
+                            <ul class="list-disc pl-5 space-y-2 text-gray-400">
+                                <li><b>Trabalho Pontual:</b> O prestador faz uma tarefa específica e vai embora.</li>
+                                <li><b>Autonomia Total:</b> O prestador decide como e quando fazer o serviço.</li>
+                                <li><b>Foco no Produto:</b> A contratação visa uma entrega final (ex: máquina consertada).</li>
+                            </ul>
+                        `,
+                        tip: "A retenção exige a permanência e subordinação da equipe (Cessão de Mão de Obra). Conserto pontual é isento."
                     };
+
                     state.modalPerguntas = [{ id: 'inss_trigger', texto: instrucao.q, sim: instrucao.sim, nao: instrucao.nao, tip: instrucao.tip }];
                     renderModal();
                     document.getElementById('auditModal').classList.remove('hidden-el');
@@ -427,6 +465,8 @@
                     calcular();
                 }
             };
+
+            document.getElementById('btnToggleSimulador').onclick = () => document.getElementById('simuladorDeducao').classList.toggle('hidden-el');
 
             document.getElementById('codigoServico').onchange = () => {
                 const cod = document.getElementById('codigoServico').value;
@@ -439,37 +479,6 @@
                 document.getElementById('containerDeducao').classList.toggle('pointer-events-none', !permiteD);
                 document.getElementById('btnToggleSimulador').classList.toggle('hidden-el', !permiteD);
                 renderSimulador(cod);
-            };
-
-            document.getElementById('btnOpenAdmin').onclick = () => {
-                document.getElementById('adminPasswordInput').value = '';
-                document.getElementById('passwordModal').classList.remove('hidden-el');
-                document.getElementById('adminPasswordInput').focus();
-            };
-
-            document.getElementById('btnCancelPassword').onclick = () => {
-                document.getElementById('passwordModal').classList.add('hidden-el');
-            };
-
-            document.getElementById('btnConfirmPassword').onclick = () => {
-                if(document.getElementById('adminPasswordInput').value === ADMIN_PASS) {
-                    document.getElementById('passwordModal').classList.add('hidden-el');
-                    document.getElementById('adminPanel').classList.remove('hidden-el');
-                } else {
-                    alert("Senha incorreta.");
-                }
-            };
-
-            document.getElementById('adminPasswordInput').addEventListener('keypress', function(e) {
-                if(e.key === 'Enter') document.getElementById('btnConfirmPassword').click();
-            });
-
-            document.getElementById('btnCloseAdmin').onclick = () => document.getElementById('adminPanel').classList.add('hidden-el');
-            document.getElementById('btnGerarJson').onclick = () => {
-                const c = document.getElementById('adminCod').value; if(!c) return;
-                const obj = { [c]: { desc: document.getElementById('adminDesc').value, iss: document.getElementById('adminISS').checked ? "S" : "N", ir: document.getElementById('adminIR').checked ? 1.5 : 0, inss: document.getElementById('adminINSS').checked ? 11 : 0, pcc: document.getElementById('adminPCC').checked ? 4.65 : 0 } };
-                document.getElementById('adminOutput').value = JSON.stringify(obj, null, 2);
-                document.getElementById('adminOutput').classList.remove('hidden-el');
             };
         }
 
@@ -508,7 +517,7 @@
                 const base = Math.max(0, vBruto - vDed);
                 imps.push({n:'INSS', r:true, v:base * (taxInss/100), f:'Retenção Previdenciária IN 2110.', b:base, a:taxInss, d:vDed, br:vBruto});
             } else {
-                let msg = (taxInss === 0) ? 'Serviço não sujeito a INSS.' : 'Dispensado: Falta de requisitos legais de retenção.';
+                let msg = (taxInss === 0) ? 'Serviço não sujeito a INSS.' : 'Dispensado: Falta de requisitos legais de retenção (Não é Cessão de Mão de Obra ou Empreitada Parcial).';
                 imps.push({n:'INSS', r:false, v:0, f:msg});
             }
 
@@ -545,12 +554,28 @@
             imps.forEach(i => {
                 const div = document.createElement('div');
                 div.className = `p-4 flex justify-between items-start border-b border-gray-800 transition-colors ${i.r ? 'bg-orange-500/[0.03]' : ''}`;
-                let calc = i.r && i.b ? `<div class="mt-2 font-mono text-[10px] text-white bg-black/80 p-2.5 rounded border border-gray-700 uppercase tracking-tighter shadow-xl">
-                    <span class="text-orange-500 mr-2 font-black">MEMÓRIA DE CÁLCULO:</span> ${i.d > 0 ? '(R$ '+i.br.toLocaleString('pt-BR')+' - R$ '+i.d.toLocaleString('pt-BR')+')' : 'R$ '+i.b.toLocaleString('pt-BR')} x ${i.a}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
-                </div>` : '';
+                
+                let calc = '';
+                if(i.r && i.b !== undefined) {
+                    if(i.d > 0) {
+                        calc = `<div class="mt-3 font-mono text-[10px] text-white bg-black/80 p-3 rounded-lg border border-gray-700 uppercase tracking-tighter shadow-xl">
+                            <div class="text-yellow-400 mb-2 font-bold border-b border-gray-700/50 pb-2">
+                                1. (BRUTO R$ ${i.br.toLocaleString('pt-BR', {minimumFractionDigits:2})} - DEDUÇÃO R$ ${i.d.toLocaleString('pt-BR', {minimumFractionDigits:2})}) = <span class="text-white">BASE R$ ${i.b.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                            </div>
+                            <div>
+                                <span class="text-orange-500 mr-2 font-black">2. MEMÓRIA DE CÁLCULO:</span> BASE R$ ${i.b.toLocaleString('pt-BR', {minimumFractionDigits:2})} x ${i.a.toLocaleString('pt-BR', {minimumFractionDigits:2})}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                            </div>
+                        </div>`;
+                    } else {
+                        calc = `<div class="mt-3 font-mono text-[10px] text-white bg-black/80 p-3 rounded-lg border border-gray-700 uppercase tracking-tighter shadow-xl">
+                            <span class="text-orange-500 mr-2 font-black">MEMÓRIA DE CÁLCULO:</span> R$ ${i.b.toLocaleString('pt-BR', {minimumFractionDigits:2})} x ${i.a.toLocaleString('pt-BR', {minimumFractionDigits:2})}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                        </div>`;
+                    }
+                }
+
                 div.innerHTML = `<div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1.5"><span class="text-[7px] font-black px-2 py-0.5 rounded shadow-sm ${i.r ? 'bg-orange-600 text-black font-black':'bg-gray-800 text-white'}">${i.r?'RETÉM':'ISENTO'}</span><span class="text-xs font-black text-white uppercase tracking-widest">${i.n}</span></div>
-                    <p class="text-[10px] text-white font-bold mb-1 opacity-100 font-medium">${i.f}</p>${calc}
+                    <div class="flex items-center gap-2 mb-1.5"><span class="text-[8px] font-black px-2 py-0.5 rounded shadow-sm ${i.r ? 'bg-orange-600 text-black font-black':'bg-gray-800 text-white'}">${i.r?'RETÉM':'ISENTO'}</span><span class="text-xs font-black text-white uppercase tracking-widest">${i.n}</span></div>
+                    <p class="text-[11px] text-white font-bold mb-1 opacity-100 font-medium">${i.f}</p>${calc}
                 </div><span class="text-sm font-bold text-white font-mono ml-4 shrink-0">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>`;
                 container.appendChild(div);
             });
@@ -572,20 +597,83 @@
 
         function renderSimulador(cod) {
             const container = document.getElementById('simuladorBotoes');
-            container.innerHTML = ''; let bts = [];
-            if(cod === '14.01') bts = [{p:80, l:'Limpeza Comum'}, {p:35, l:'Hospitais'}];
-            else if(cod && cod.startsWith('07')) bts = [{p:50, l:'Obra Geral'}, {p:90, l:'Pavimentação'}];
-            bts.forEach(b => {
-                const btn = document.createElement('button');
-                btn.className = "bg-[#080808] border border-gray-700 hover:bg-orange-600 text-white p-2.5 rounded-xl transition-all text-left group";
-                btn.innerHTML = `<span class="block text-[7px] text-white font-black group-hover:text-black">DEDUÇÃO ${b.p}%</span><span class="text-[9px] font-bold text-white group-hover:text-black">${b.l}</span>`;
-                btn.onclick = () => {
-                    state.valorMaterial = state.valorTotal * (b.p/100);
-                    document.getElementById('valorMaterial').value = state.valorMaterial.toLocaleString('pt-BR', {minimumFractionDigits:2});
-                };
-                container.appendChild(btn);
-            });
+            const aviso = document.getElementById('simuladorAviso');
+            const naoAplicavel = document.getElementById('simuladorNaoAplicavel');
+            
+            container.innerHTML = ''; 
+            let bts = [];
+            
+            if(cod === '14.01') {
+                bts = [
+                    {p:80, l:'Limpeza Comum', b:'Base 20%'}, 
+                    {p:35, l:'Hospitais', b:'Base 65%'},
+                    {p:55, l:'C/ Equipamentos', b:'Base 45%'}
+                ];
+            } else if(cod && cod.startsWith('07')) {
+                bts = [
+                    {p:50, l:'Obras em Geral', b:'Base 50%'}, 
+                    {p:55, l:'Obras de Arte', b:'Base 45%'},
+                    {p:85, l:'Terraplenagem', b:'Base 15%'},
+                    {p:90, l:'Pavimentação', b:'Base 10%'}
+                ];
+            }
+            
+            if(bts.length > 0) {
+                container.classList.remove('hidden-el');
+                aviso.classList.remove('hidden-el');
+                naoAplicavel.classList.add('hidden-el');
+                
+                bts.forEach(b => {
+                    const btn = document.createElement('button');
+                    btn.className = "bg-[#121212] border border-gray-700 hover:border-yellow-500 text-left p-2.5 rounded-lg group transition-colors";
+                    btn.innerHTML = `
+                        <span class="block text-[11px] font-bold text-gray-200 group-hover:text-yellow-500">Dedução: ${b.p}%</span>
+                        <span class="block text-[9px] text-gray-500 mt-0.5">${b.b} - ${b.l}</span>
+                    `;
+                    btn.onclick = () => {
+                        state.valorMaterial = state.valorTotal * (b.p/100);
+                        document.getElementById('valorMaterial').value = state.valorMaterial.toLocaleString('pt-BR', {minimumFractionDigits:2});
+                    };
+                    container.appendChild(btn);
+                });
+            } else {
+                container.classList.add('hidden-el');
+                aviso.classList.add('hidden-el');
+                naoAplicavel.classList.remove('hidden-el');
+            }
+            lucide.createIcons();
         }
+
+        document.getElementById('btnOpenAdmin').onclick = () => {
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('passwordModal').classList.remove('hidden-el');
+            document.getElementById('adminPasswordInput').focus();
+        };
+
+        document.getElementById('btnCancelPassword').onclick = () => {
+            document.getElementById('passwordModal').classList.add('hidden-el');
+        };
+
+        document.getElementById('btnConfirmPassword').onclick = () => {
+            if(document.getElementById('adminPasswordInput').value === ADMIN_PASS) {
+                document.getElementById('passwordModal').classList.add('hidden-el');
+                document.getElementById('adminPanel').classList.remove('hidden-el');
+            } else {
+                alert("Senha incorreta.");
+            }
+        };
+
+        document.getElementById('adminPasswordInput').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') document.getElementById('btnConfirmPassword').click();
+        });
+
+        document.getElementById('btnCloseAdmin').onclick = () => document.getElementById('adminPanel').classList.add('hidden-el');
+        document.getElementById('btnGerarJson').onclick = () => {
+            const c = document.getElementById('adminCod').value; if(!c) return;
+            const obj = { [c]: { desc: document.getElementById('adminDesc').value, iss: document.getElementById('adminISS').checked ? "S" : "N", ir: document.getElementById('adminIR').checked ? 1.5 : 0, inss: document.getElementById('adminINSS').checked ? 11 : 0, pcc: document.getElementById('adminPCC').checked ? 4.65 : 0 } };
+            document.getElementById('adminOutput').value = JSON.stringify(obj, null, 2);
+            document.getElementById('adminOutput').classList.remove('hidden-el');
+        };
 
         init();
     </script>
