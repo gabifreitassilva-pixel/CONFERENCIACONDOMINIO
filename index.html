@@ -40,15 +40,15 @@
             </div>
             <div>
                 <h1 class="text-xl font-bold text-white tracking-tight leading-none uppercase">TaxAudit <span class="text-orange-500">Pro</span></h1>
-                <p class="text-[9px] text-gray-300 font-bold uppercase tracking-[0.2em] mt-1">Conferência Fiscal & Auditoria de Notas</p>
+                <p class="text-[9px] text-white font-bold uppercase tracking-[0.2em] mt-1 opacity-80">Conferência Fiscal & Auditoria Digital</p>
             </div>
         </div>
         <div class="flex items-center gap-4">
-            <div id="statusNuvem" class="hidden md:flex items-center gap-2 text-[9px] font-bold bg-gray-900 px-3 py-1 rounded-full border border-gray-800 text-orange-500 shadow-sm">
-                <div class="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
-                BANCO DE REGRAS ATIVO
+            <div id="statusNuvem" class="flex items-center gap-2 text-[9px] font-bold bg-gray-900 px-3 py-1 rounded-full border border-gray-800 text-white shadow-sm">
+                <div id="statusDot" class="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></div>
+                <span id="statusText">SINCRONIZANDO...</span>
             </div>
-            <button onclick="window.location.reload()" class="text-[10px] font-bold text-gray-300 hover:text-white uppercase flex items-center gap-2 transition-colors">
+            <button onclick="window.location.reload()" class="text-[10px] font-bold text-gray-200 hover:text-white uppercase flex items-center gap-2 transition-colors">
                 <i data-lucide="refresh-cw" class="w-3 h-3"></i> Nova Consulta
             </button>
         </div>
@@ -56,7 +56,7 @@
 
     <main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 overflow-hidden">
         
-        <!-- COLUNA ESQUERDA -->
+        <!-- COLUNA ESQUERDA: INPUTS -->
         <div class="lg:col-span-5 flex flex-col gap-4 overflow-y-auto custom-scroll pr-1 pb-4">
             
             <div class="bg-[#111111] rounded-2xl p-5 border border-gray-800 shadow-xl shrink-0">
@@ -112,7 +112,7 @@
                             <option value="" disabled selected>Aguardando preenchimento...</option>
                         </select>
                         <button id="btnSolicitarCodigo" class="mt-2 w-full text-center text-[9px] text-yellow-500 hover:text-yellow-400 border border-yellow-600/30 hover:bg-yellow-500/10 py-1.5 rounded-lg transition-colors flex justify-center items-center gap-2 uppercase font-black tracking-widest">
-                            <i data-lucide="message-circle" class="w-3 h-3"></i> Código não listado? Solicitar inclusão
+                            <i data-lucide="message-circle" class="w-3 h-3"></i> Solicitar novo código
                         </button>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
@@ -143,26 +143,25 @@
             
             <div id="waitingState" class="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#111111] border border-gray-800 rounded-2xl border-dashed">
                 <div class="bg-[#181818] p-8 rounded-full mb-4 border border-gray-800 shadow-inner">
-                    <i data-lucide="file-search" class="text-gray-400 w-10 h-10"></i>
+                    <i data-lucide="file-search" class="text-white opacity-40 w-12 h-12"></i>
                 </div>
                 <h3 class="text-base font-bold text-white mb-2 uppercase tracking-widest">Aguardando Parâmetros</h3>
-                <p class="text-gray-400 text-[9px] max-w-xs leading-relaxed uppercase tracking-widest text-center">Preencha os dados e execute a auditoria para visualizar o parecer.</p>
+                <p class="text-white opacity-60 text-[9px] max-w-xs leading-relaxed uppercase tracking-widest text-center">Preencha os dados e execute a auditoria para visualizar o parecer.</p>
             </div>
 
             <div id="resultsState" class="hidden-el flex flex-col h-full overflow-hidden fade-in space-y-4 pb-2">
                 <div class="grid grid-cols-2 gap-3 shrink-0">
                     <div class="bg-[#111111] border border-gray-800 rounded-2xl p-4 relative overflow-hidden group">
                         <div class="absolute top-0 right-0 w-14 h-14 bg-gray-800/30 rounded-bl-full transition-transform group-hover:scale-110"></div>
-                        <p class="text-[10px] font-bold text-white uppercase mb-0.5 tracking-widest">Valor Bruto NF</p>
+                        <p class="text-[10px] font-bold text-white uppercase mb-0.5 tracking-widest opacity-80">Valor Bruto NF</p>
                         <p id="resBruto" class="text-xl font-bold text-white font-mono"></p>
                     </div>
                     <div class="bg-gradient-to-r from-green-800 to-green-600 rounded-2xl p-4 shadow-lg text-white">
-                        <p class="text-[10px] font-bold text-white uppercase mb-0.5 tracking-widest">Líquido a Pagar ao Prestador</p>
+                        <p class="text-[10px] font-bold text-white uppercase mb-0.5 tracking-widest opacity-90">Líquido ao Prestador</p>
                         <p id="resLiquido" class="text-xl font-bold font-mono"></p>
                     </div>
                 </div>
 
-                <!-- PARECER TÉCNICO LISTA -->
                 <div class="bg-[#111111] border border-gray-800 rounded-2xl flex flex-col flex-1 min-h-0 shadow-2xl">
                     <div class="p-3 border-b border-gray-800 bg-[#181818] flex justify-between items-center shrink-0">
                         <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-[0.25em]">Parecer Técnico de Auditoria</h3>
@@ -174,7 +173,7 @@
 
                     <div class="p-5 bg-[#111111] border-t border-gray-800 flex justify-between items-center shrink-0">
                         <span class="text-[11px] font-black text-white uppercase tracking-widest underline decoration-orange-500 decoration-2 underline-offset-4">Total Descontado</span>
-                        <span id="resRetido" class="text-xl font-bold text-red-500 font-mono"></span>
+                        <span id="resRetido" class="text-2xl font-bold text-red-500 font-mono"></span>
                     </div>
                 </div>
 
@@ -187,55 +186,51 @@
 
     <!-- MODAL DE ANÁLISE COMPARATIVA -->
     <div id="auditModal" class="hidden-el fixed inset-0 z-[100] glass flex items-center justify-center p-4">
-        <div class="bg-[#141414] border border-orange-500/20 rounded-[2.5rem] p-6 md:p-10 max-w-5xl w-full shadow-2xl slide-in max-h-[92vh] flex flex-col overflow-hidden">
+        <div class="bg-[#141414] border border-orange-500/20 rounded-[2.5rem] p-6 md:p-10 max-w-5xl w-full shadow-2xl slide-in max-h-[92vh] flex flex-col overflow-hidden text-white">
             
             <div class="flex items-center justify-between mb-8 border-b border-gray-800 pb-5 shrink-0">
                 <div class="flex items-center gap-4">
                     <div class="bg-orange-500/20 p-3 rounded-full shadow-lg"><i data-lucide="shield-question" class="text-orange-500 w-7 h-7"></i></div>
                     <div>
-                        <h3 class="text-2xl font-black text-white uppercase tracking-tighter">Análise de Enquadramento INSS</h3>
-                        <p class="text-[10px] text-white uppercase font-bold tracking-[0.2em] mt-1">Conformidade obrigatória com IN RFB 2110/2022</p>
+                        <h3 class="text-2xl font-black text-white uppercase tracking-tighter">Análise Técnica Previdenciária</h3>
+                        <p class="text-[10px] text-white uppercase font-bold tracking-[0.2em] mt-1 opacity-80">IN RFB 2110/2022</p>
                     </div>
                 </div>
-                <div id="modalStepText" class="text-[10px] font-black text-orange-500 bg-orange-500/10 px-4 py-2 rounded-full border border-orange-500/20 uppercase tracking-widest shadow-inner">Auditoria Técnica</div>
+                <div id="modalStepText" class="text-[10px] font-black text-orange-500 bg-orange-500/10 px-4 py-2 rounded-full border border-orange-500/20 uppercase tracking-widest shadow-inner">Auditoria Crítica</div>
             </div>
 
             <div class="flex-1 overflow-y-auto custom-scroll pr-4">
                 <h4 id="modalQuestion" class="text-3xl font-black text-white mb-10 text-center leading-tight"></h4>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10 text-white font-medium">
-                    <!-- BLOCO SIM (CARACTERIZA RETENÇÃO) -->
+                    <!-- BLOCO SIM -->
                     <div class="bg-[#1c1c1c] rounded-[2rem] border border-green-500/20 p-8 flex flex-col h-full hover:bg-[#222222] transition-all group">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="bg-green-500/20 p-2.5 rounded-xl border border-green-500/30"><i data-lucide="check-circle" class="text-green-500 w-6 h-6"></i></div>
                             <span class="text-xl font-black text-green-500 uppercase tracking-widest decoration-green-500/30 underline-offset-8 underline">SIM, HÁ RETENÇÃO</span>
                         </div>
-                        <div id="modalDetailSim" class="text-sm text-white leading-relaxed space-y-5 flex-1 font-bold italic">
-                            <!-- Inserido via JS -->
-                        </div>
+                        <div id="modalDetailSim" class="text-sm text-white leading-relaxed space-y-5 flex-1 font-bold italic"></div>
                         <div class="mt-8 pt-6 border-t border-gray-800 flex items-center gap-2 text-[10px] font-black text-green-500 uppercase tracking-widest">
-                            <i data-lucide="shield-check" class="w-4 h-4"></i> Desconto de 11% será aplicado no cálculo
+                            <i data-lucide="shield-check" class="w-4 h-4"></i> Desconto de 11% será aplicado
                         </div>
                     </div>
 
-                    <!-- BLOCO NÃO (DISPENSA RETENÇÃO) -->
+                    <!-- BLOCO NÃO -->
                     <div class="bg-[#1c1c1c] rounded-[2rem] border border-red-500/20 p-8 flex flex-col h-full hover:bg-[#222222] transition-all group">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="bg-red-500/20 p-2.5 rounded-xl border border-red-500/30"><i data-lucide="x-circle" class="text-red-500 w-6 h-6"></i></div>
                             <span class="text-xl font-black text-red-500 uppercase tracking-widest decoration-red-500/30 underline-offset-8 underline">NÃO, É ISENTO</span>
                         </div>
-                        <div id="modalDetailNao" class="text-sm text-white leading-relaxed space-y-5 flex-1 font-bold italic">
-                            <!-- Inserido via JS -->
-                        </div>
+                        <div id="modalDetailNao" class="text-sm text-white leading-relaxed space-y-5 flex-1 font-bold italic"></div>
                         <div class="mt-8 pt-6 border-t border-gray-800 flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-widest">
-                            <i data-lucide="shield-alert" class="w-4 h-4"></i> Valor da nota será pago integralmente
+                            <i data-lucide="shield-alert" class="w-4 h-4"></i> Valor Integral (Sem Desconto)
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-blue-500/10 border border-blue-500/20 p-6 rounded-[1.5rem] mb-6 flex gap-5 items-center shadow-lg">
                     <div class="p-3 bg-blue-500/20 rounded-full border border-blue-500/30"><i data-lucide="info" class="text-blue-400 w-6 h-6"></i></div>
-                    <p id="modalTip" class="text-xs text-white leading-relaxed italic font-black uppercase"></p>
+                    <p id="modalTip" class="text-xs text-white leading-relaxed font-black uppercase tracking-tight"></p>
                 </div>
             </div>
 
@@ -247,9 +242,31 @@
                 </button>
                 <button onclick="answerModal(false)" class="group bg-gray-900 text-white border border-gray-700 font-black py-7 rounded-[2rem] hover:bg-red-600 hover:text-white hover:border-red-600 transition-all uppercase text-sm tracking-widest shadow-2xl flex flex-col items-center justify-center">
                     <span>NÃO, DISPENSAR</span>
-                    <span class="text-[10px] opacity-70 font-bold group-hover:opacity-100 uppercase tracking-tighter">(Serviço Isento de Retenção)</span>
+                    <span class="text-[10px] opacity-70 font-bold group-hover:opacity-100 uppercase tracking-tighter">(Serviço Isento)</span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- PANEL ADMIN -->
+    <div id="adminPanel" class="hidden-el fixed inset-0 z-[110] glass flex items-center justify-center p-4 text-white">
+        <div class="bg-[#181818] border border-green-500/50 rounded-2xl p-6 relative shadow-2xl max-w-xl w-full">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-3">
+                <h3 class="text-green-500 font-black uppercase tracking-widest text-[10px] flex items-center gap-2"><i data-lucide="terminal" class="w-3.5 h-3.5"></i> Admin JSON Creator</h3>
+                <button id="btnCloseAdmin" class="text-gray-400 hover:text-red-500 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <div class="grid grid-cols-12 gap-2 mb-3">
+                <input id="adminCod" placeholder="Cód" class="col-span-3 bg-[#080808] border border-gray-700 p-2 rounded-lg text-sm text-white outline-none">
+                <input id="adminDesc" placeholder="Descrição completa..." class="col-span-9 bg-[#080808] border border-gray-700 p-2 rounded-lg text-sm text-white outline-none">
+            </div>
+            <div class="flex gap-4 text-[10px] font-bold text-white mb-4 bg-[#080808] p-3 rounded-lg border border-gray-800">
+                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="adminISS" class="accent-green-500 w-3.5 h-3.5"> ISS</label>
+                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="adminINSS" class="accent-green-500 w-3.5 h-3.5"> INSS</label>
+                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="adminPCC" class="accent-green-500 w-3.5 h-3.5"> PCC</label>
+                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="adminIR" class="accent-green-500 w-3.5 h-3.5"> IR</label>
+            </div>
+            <button id="btnGerarJson" class="w-full bg-green-600 text-[#050505] font-black py-2 rounded-lg text-[10px] uppercase tracking-widest mb-3">Gerar JSON</button>
+            <textarea id="adminOutput" readonly class="hidden-el w-full h-32 bg-black text-green-500 font-mono text-[9px] p-3 rounded-lg border border-gray-800 outline-none"></textarea>
         </div>
     </div>
 
@@ -273,13 +290,18 @@
 
         async function loadRegras() {
             try {
-                const res = await fetch(GIST_URL);
+                // Forçando o GitHub a ignorar o cache com timestamp
+                const url = `${GIST_URL}?t=${new Date().getTime()}`;
+                const res = await fetch(url);
                 if(res.ok) {
                     REGRAS_DATA = await res.json();
                     popularSelect();
-                    document.getElementById('statusNuvem').classList.remove('hidden');
+                    document.getElementById('statusText').textContent = "BANCO SINCRONIZADO";
+                    document.getElementById('statusDot').className = "w-1.5 h-1.5 bg-green-500 rounded-full";
                 }
             } catch(e) {
+                document.getElementById('statusText').textContent = "ERRO AO SINCRONIZAR";
+                document.getElementById('statusDot').className = "w-1.5 h-1.5 bg-red-500 rounded-full";
                 REGRAS_DATA = { "14.01": { "desc": "Limpeza Geral", "iss": "S", "ir": 1.0, "inss": 11, "pcc": 4.65 } };
                 popularSelect();
             }
@@ -320,28 +342,38 @@
                 btn.innerHTML = `<i data-lucide="search" class="w-4 h-4"></i>`; lucide.createIcons();
             };
 
+            document.getElementById('codMunicipal').addEventListener('input', (e) => {
+                const codM = e.target.value.trim();
+                const cidade = state.municipio.toUpperCase();
+                if(REGRAS_DATA.conversoes && REGRAS_DATA.conversoes[cidade]) {
+                    const codF = REGRAS_DATA.conversoes[cidade][codM];
+                    if(codF) {
+                        const select = document.getElementById('codigoServico');
+                        select.value = codF;
+                        select.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+
             document.getElementById('btnExecutarAuditoria').onclick = () => {
                 const cod = document.getElementById('codigoServico').value;
-                if(!cod || state.valorTotal <= 0) return alert("Erro: Preencha o valor e selecione o código.");
-                
+                if(!cod || state.valorTotal <= 0) return alert("Erro: Informe o valor e o código.");
                 const r = REGRAS_DATA[cod];
                 const rawInss = parseFloat(r.inss) || 0;
 
-                // SE TEM INSS NO BANCO, ABRE O MODAL
                 if(rawInss > 0) {
                     const isObra = cod.startsWith('07');
                     const instrucao = isObra ? {
-                        q: "A Empreitada contratada é TOTAL?",
-                        sim: `<p>• <b>OBRA PARCIAL:</b> Contratação apenas de uma etapa (gesso, pintura, etc).</p><p>• <b>MATRÍCULA CNO:</b> Está no seu nome (Tomador).</p>`,
-                        nao: `<p>• <b>OBRA TOTAL:</b> Prestador assumiu execução integral sob sua responsabilidade.</p><p>• <b>MATRÍCULA CNO:</b> Está no nome do <b>PRESTADOR</b>.</p>`,
-                        tip: "Para obras, o 'SIM' no modal abaixo significa que você confirma a necessidade de retenção por ser parcial."
+                        q: "A Empreitada é TOTAL?",
+                        sim: `<p>• <b>OBRA PARCIAL:</b> Você contratou apenas uma etapa (pintura, gesso, etc).</p><p>• <b>MATRÍCULA CNO:</b> Está no seu nome (Tomador).</p>`,
+                        nao: `<p>• <b>OBRA TOTAL:</b> Prestador assumiu toda a obra sob responsabilidade dele.</p><p>• <b>MATRÍCULA CNO:</b> Está no nome do <b>PRESTADOR</b>.</p>`,
+                        tip: "Nota de obra: Clique em SIM para reter os 11% se for parcial."
                     } : {
-                        q: "Há CESSÃO DE MÃO DE OBRA?",
-                        sim: `<p>• <b>DISPOSIÇÃO:</b> Trabalhadores atuam sob ordens diárias do Tomador.</p><p>• <b>HABITUALIDADE:</b> Equipe fixa no seu estabelecimento.</p>`,
-                        nao: `<p>• <b>EVENTUAL:</b> Técnico resolve problema rápido e vai embora.</p><p>• <b>AUTONOMIA:</b> Fornecedor gere horários e métodos sozinhos.</p>`,
-                        tip: "A retenção de 11% exige pessoal cedido de forma contínua."
+                        q: "Houve CESSÃO DE MÃO DE OBRA?",
+                        sim: `<p>• <b>DISPOSIÇÃO:</b> Trabalhadores seguem ordens diárias do Tomador.</p><p>• <b>HABITUALIDADE:</b> Equipe fixa instalada no seu local.</p>`,
+                        nao: `<p>• <b>EVENTUAL:</b> Técnico vem, conserta e vai embora.</p><p>• <b>AUTONOMIA:</b> Prestador gere horários sozinho.</p>`,
+                        tip: "Serviços comuns: Retenção de 11% exige equipe cedida à sua disposição."
                     };
-
                     state.modalPerguntas = [{ id: 'inss_trigger', texto: instrucao.q, sim: instrucao.sim, nao: instrucao.nao, tip: instrucao.tip }];
                     renderModal();
                     document.getElementById('auditModal').classList.remove('hidden-el');
@@ -363,8 +395,6 @@
                 document.getElementById('btnToggleSimulador').classList.toggle('hidden-el', !permiteD);
                 renderSimulador(cod);
             };
-
-            document.getElementById('btnToggleSimulador').onclick = () => document.getElementById('simuladorDeducao').classList.toggle('hidden-el');
         }
 
         function renderModal() {
@@ -377,7 +407,6 @@
         }
 
         window.answerModal = (ans) => {
-            // Se clicou no botão de RETER (SIM), confirmamos a retenção
             state.reterInssConfirmado = ans;
             document.getElementById('auditModal').classList.add('hidden-el');
             calcular();
@@ -401,30 +430,22 @@
             const taxInss = parseFloat(r.inss) || 0;
             if(taxInss > 0 && state.reterInssConfirmado) {
                 const base = Math.max(0, vBruto - vDed);
-                imps.push({n:'INSS', r:true, v:base * (taxInss/100), f:'Retenção IN 2110.', b:base, a:taxInss, d:vDed, br:vBruto});
+                imps.push({n:'INSS', r:true, v:base * (taxInss/100), f:'Retenção Previdenciária IN 2110.', b:base, a:taxInss, d:vDed, br:vBruto});
             } else {
-                let msg = (taxInss === 0) ? 'Serviço não sujeito a INSS.' : 'Dispensado: Falta de requisitos de Cessão de Mão de Obra ou Empreitada Parcial.';
+                let msg = (taxInss === 0) ? 'Serviço não sujeito a INSS.' : 'Dispensado por falta de enquadramento legal.';
                 imps.push({n:'INSS', r:false, v:0, f:msg});
             }
 
-            // IRRF
+            // IRRF / PCC
             let retIR = r.ir > 0 && state.regime === 'normal' && tom === 'PJ';
-            if(retIR) {
-                const v = vBruto * (r.ir/100);
-                if(v < 10) retIR = false;
-                else imps.push({n:'IRRF', r:true, v:v, f:'Art. 714 RIR/2018.', b:vBruto, a:r.ir});
-            }
-            if(!retIR) imps.push({n:'IRRF', r:false, v:0, f:tom==='CONDOMINIO'?'Condomínio não retém IRRF.':'Isento ou Valor < R$ 10.'});
+            if(retIR) { imps.push({n:'IRRF', r:true, v:vBruto * (r.ir/100), f:'Art. 714 RIR/2018.', b:vBruto, a:r.ir}); }
+            else imps.push({n:'IRRF', r:false, v:0, f:'Isento ou Condomínio não retém.'});
 
-            // PCC
             let retPCC = r.pcc > 0 && state.regime === 'normal' && tom !== 'CONDOMINIO';
             if(retPCC) {
                 const aliq = tom === 'ORGAO_PUBLICO' ? 5.85 : 4.65;
-                const v = vBruto * (aliq/100);
-                if(v < 10 && tom !== 'ORGAO_PUBLICO') retPCC = false;
-                else imps.push({n:'PIS/COFINS/CSLL', r:true, v:v, f:'Retenção Lei 10.833.', b:vBruto, a:aliq});
-            }
-            if(!retPCC) imps.push({n:'PIS/COFINS/CSLL', r:false, v:0, f:'Isento ou Dispensado.'});
+                imps.push({n:'PIS/COFINS/CSLL', r:true, v:vBruto * (aliq/100), f:'Regra Lei 10.833.', b:vBruto, a:aliq});
+            } else imps.push({n:'PIS/COFINS/CSLL', r:false, v:0, f:'Isento ou Dispensado.'});
 
             renderResults(imps);
         }
@@ -433,35 +454,21 @@
             document.getElementById('waitingState').classList.add('hidden-el');
             document.getElementById('resultsState').classList.remove('hidden-el');
             const totalRet = imps.reduce((acc, i) => acc + i.v, 0);
-            
             document.getElementById('resBruto').textContent = "R$ " + state.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2});
             document.getElementById('resLiquido').textContent = "R$ " + (state.valorTotal - totalRet).toLocaleString('pt-BR', {minimumFractionDigits:2});
             document.getElementById('resRetido').textContent = "R$ " + totalRet.toLocaleString('pt-BR', {minimumFractionDigits:2});
-            
             const container = document.getElementById('taxesContainer');
             container.innerHTML = '';
-            
             imps.forEach(i => {
                 const div = document.createElement('div');
-                div.className = `p-4 flex justify-between items-start border-b border-gray-800 hover:bg-white/[0.03] transition-colors ${i.r ? 'bg-orange-500/[0.03]' : ''}`;
-                
-                let calc = '';
-                if(i.r && i.b) {
-                    const formula = i.d > 0 ? `(R$ ${i.br.toLocaleString('pt-BR')} - R$ ${i.d.toLocaleString('pt-BR')})` : `R$ ${i.b.toLocaleString('pt-BR')}`;
-                    calc = `<div class="mt-2 font-mono text-[10px] text-white bg-black/60 p-2 rounded-lg border border-gray-700 uppercase tracking-tighter shadow-xl">
-                        <span class="text-orange-500 mr-2 font-black">MEMÓRIA DE CÁLCULO:</span> ${formula} x ${i.a}% = <span class="text-white font-black underline decoration-orange-500 underline-offset-4 decoration-2">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
-                    </div>`;
-                }
-
+                div.className = `p-4 flex justify-between items-start border-b border-gray-800 transition-colors ${i.r ? 'bg-orange-500/[0.03]' : ''}`;
+                let calc = i.r && i.b ? `<div class="mt-2 font-mono text-[10px] text-white bg-black/80 p-2.5 rounded border border-gray-700 uppercase tracking-tighter">
+                    <span class="text-orange-500 mr-2 font-black">MEMÓRIA DE CÁLCULO:</span> ${i.d > 0 ? '('+i.br.toLocaleString('pt-BR')+' - '+i.d.toLocaleString('pt-BR')+')' : i.b.toLocaleString('pt-BR')} x ${i.a}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                </div>` : '';
                 div.innerHTML = `<div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <span class="text-[7px] font-black px-2 py-0.5 rounded shadow-sm ${i.r ? 'bg-orange-600 text-[#050505] font-black':'bg-gray-800 text-white'}">${i.r?'RETÉM':'ISENTO'}</span>
-                        <span class="text-xs font-black text-white uppercase tracking-tighter">${i.n}</span>
-                    </div>
-                    <p class="text-[10px] text-white font-bold mb-1">${i.f}</p>
-                    ${calc}
-                </div>
-                <span class="text-sm font-bold text-white font-mono ml-4 shrink-0">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>`;
+                    <div class="flex items-center gap-2 mb-1.5"><span class="text-[7px] font-black px-2 py-0.5 rounded ${i.r ? 'bg-orange-600 text-black':'bg-gray-800 text-white'}">${i.r?'RETÉM':'ISENTO'}</span><span class="text-xs font-black text-white uppercase">${i.n}</span></div>
+                    <p class="text-[10px] text-white font-bold mb-1 opacity-100">${i.f}</p>${calc}
+                </div><span class="text-sm font-bold text-white font-mono ml-4">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>`;
                 container.appendChild(div);
             });
             lucide.createIcons();
@@ -487,8 +494,8 @@
             else if(cod && cod.startsWith('07')) bts = [{p:50, l:'Obra Geral'}, {p:90, l:'Pavimentação'}];
             bts.forEach(b => {
                 const btn = document.createElement('button');
-                btn.className = "bg-[#080808] hover:bg-orange-600 border border-gray-800 p-2.5 rounded-xl transition-all text-left group";
-                btn.innerHTML = `<span class="block text-[7px] text-white uppercase font-black group-hover:text-white">DEDUÇÃO ${b.p}%</span><span class="text-[9px] font-bold text-white">${b.l}</span>`;
+                btn.className = "bg-[#080808] hover:bg-orange-600 border border-gray-800 p-2.5 rounded-xl transition-all text-left";
+                btn.innerHTML = `<span class="block text-[7px] text-white font-black">DEDUÇÃO ${b.p}%</span><span class="text-[9px] font-bold text-white">${b.l}</span>`;
                 btn.onclick = () => {
                     state.valorMaterial = state.valorTotal * (b.p/100);
                     document.getElementById('valorMaterial').value = state.valorMaterial.toLocaleString('pt-BR', {minimumFractionDigits:2});
@@ -496,6 +503,15 @@
                 container.appendChild(btn);
             });
         }
+
+        document.getElementById('btnOpenAdmin').onclick = () => { if(prompt("Senha:")===ADMIN_PASS) document.getElementById('adminPanel').classList.remove('hidden-el'); };
+        document.getElementById('btnCloseAdmin').onclick = () => document.getElementById('adminPanel').classList.add('hidden-el');
+        document.getElementById('btnGerarJson').onclick = () => {
+            const c = document.getElementById('adminCod').value; if(!c) return;
+            const obj = { [c]: { desc: document.getElementById('adminDesc').value, iss: document.getElementById('adminISS').checked ? "S" : "N", ir: document.getElementById('adminIR').checked ? 1.5 : 0, inss: document.getElementById('adminINSS').checked ? 11 : 0, pcc: document.getElementById('adminPCC').checked ? 4.65 : 0 } };
+            document.getElementById('adminOutput').value = JSON.stringify(obj, null, 2);
+            document.getElementById('adminOutput').classList.remove('hidden-el');
+        };
 
         init();
     </script>
