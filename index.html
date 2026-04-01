@@ -25,7 +25,7 @@
 </head>
 <body class="font-sans selection:bg-orange-500/30 p-2 md:p-4 flex flex-col h-screen text-white">
 
-    <!-- ADMIN PROTEGIDO (SENHA: admin123) -->
+    <!-- ADMIN PROTEGIDO -->
     <footer class="fixed bottom-4 right-4 opacity-30 hover:opacity-100 cursor-pointer transition-opacity z-50">
         <button id="btnOpenAdmin" class="p-2.5 bg-gray-900 border border-gray-700 rounded-full shadow-xl hover:border-orange-500 transition-all text-white">
             <i data-lucide="settings" class="w-5 h-5"></i>
@@ -109,7 +109,7 @@
                     <div>
                         <label class="block text-[10px] font-bold text-white mb-1.5 uppercase tracking-wider">Código Federal (LC 116/03)</label>
                         <select id="codigoServico" class="w-full bg-[#080808] border border-gray-700 rounded-lg px-3 py-2 text-xs text-white focus:border-orange-500 outline-none appearance-none cursor-pointer">
-                            <option value="" disabled selected>Carregando banco de dados...</option>
+                            <option value="" disabled selected>Aguardando preenchimento...</option>
                         </select>
                         <button id="btnSolicitarCodigo" class="mt-2 w-full text-center text-[9px] text-yellow-500 hover:text-yellow-400 border border-yellow-600/30 hover:bg-yellow-500/10 py-1.5 rounded-lg transition-colors flex justify-center items-center gap-2 uppercase font-black tracking-widest">
                             <i data-lucide="message-circle" class="w-3 h-3"></i> Solicitar novo código
@@ -156,7 +156,8 @@
                         <p class="text-[10px] font-bold text-white uppercase mb-0.5 tracking-widest opacity-80">Valor Bruto NF</p>
                         <p id="resBruto" class="text-xl font-bold text-white font-mono"></p>
                     </div>
-                    <div class="bg-gradient-to-r from-green-800 to-green-600 rounded-2xl p-4 shadow-lg text-white">
+                    <div class="bg-gradient-to-r from-green-800 to-green-600 rounded-2xl p-4 shadow-lg text-white relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-14 h-14 bg-white/10 rounded-bl-full transition-transform group-hover:scale-110"></div>
                         <p class="text-[10px] font-bold text-white uppercase mb-0.5 tracking-widest opacity-90">Líquido ao Prestador</p>
                         <p id="resLiquido" class="text-xl font-bold font-mono"></p>
                     </div>
@@ -275,7 +276,7 @@
     </div>
 
     <script>
-        const GIST_URL = "https://gist.githubusercontent.com/gabifreitassilva-pixel/969b06493ae7642340b3ba741e18959a/raw/regras.json";
+        const GIST_ID = "969b06493ae7642340b3ba741e18959a";
         const ADMIN_PASS = "admin123";
         const permitidosDeducao = ["07.02", "07.05", "07.10", "07.11", "11.02", "14.01"];
 
@@ -294,19 +295,41 @@
 
         async function loadRegras() {
             try {
-                const url = `${GIST_URL}?t=${new Date().getTime()}`;
+                const url = `https://api.github.com/gists/${GIST_ID}?t=${new Date().getTime()}`;
                 const res = await fetch(url);
                 if(res.ok) {
-                    REGRAS_DATA = await res.json();
+                    const data = await res.json();
+                    
+                    const fileNames = Object.keys(data.files);
+                    let fileContent = data.files[fileNames[0]].content;
+                    
+                    // AUTO-CORRETOR DE SINTAXE JSON PARA VÍRGULAS FALTANDO
+                    try {
+                        REGRAS_DATA = JSON.parse(fileContent);
+                    } catch (parseErr) {
+                        console.warn("Erro de sintaxe detectado. Aplicando auto-correção de vírgulas...");
+                        // Substitui } seguido por aspas duplas por }, seguido de aspas duplas
+                        fileContent = fileContent.replace(/}\s*"/g, '}, "');
+                        REGRAS_DATA = JSON.parse(fileContent);
+                    }
+                    
                     popularSelect();
+                    
                     document.getElementById('statusText').textContent = "BANCO SINCRONIZADO";
                     document.getElementById('statusDot').className = "w-1.5 h-1.5 bg-green-500 rounded-full";
+                } else {
+                    throw new Error("Falha na conexão com o GitHub.");
                 }
             } catch(e) {
-                document.getElementById('statusText').textContent = "ERRO AO SINCRONIZAR";
+                console.error("Erro no JSON do Gist:", e);
+                document.getElementById('statusText').textContent = "ERRO DE SINTAXE NO GITHUB";
                 document.getElementById('statusDot').className = "w-1.5 h-1.5 bg-red-500 rounded-full";
-                REGRAS_DATA = { "14.01": { "desc": "Limpeza Geral", "iss": "S", "ir": 1.0, "inss": 11, "pcc": 4.65 } };
+                
+                // Dados de segurança para não travar a tela
+                REGRAS_DATA = { "14.01": { "desc": "Limpeza Geral (MODO DE SEGURANÇA)", "iss": "S", "ir": 1.0, "inss": 11, "pcc": 4.65 } };
                 popularSelect();
+                
+                alert("🚨 ERRO DE SINTAXE NO SEU ARQUIVO DO GITHUB 🚨\n\nO sistema tentou corrigir automaticamente, mas o erro persiste.\nDetalhe: " + e.message + "\n\nVerifique se falta alguma vírgula ( , ) ou aspas ( \" ) no seu arquivo 'regras.json'.");
             }
         }
 
@@ -357,6 +380,11 @@
                     }
                 }
             });
+
+            document.getElementById('btnSolicitarCodigo').onclick = () => {
+                const cod = prompt("Qual código falta?");
+                if(cod) window.open(`https://api.whatsapp.com/send?phone=5511911224407&text=Solicito inclusão do código ${cod}`, '_blank');
+            };
 
             document.getElementById('btnExecutarAuditoria').onclick = () => {
                 const cod = document.getElementById('codigoServico').value;
@@ -472,11 +500,11 @@
             imps.forEach(i => {
                 const div = document.createElement('div');
                 div.className = `p-4 flex justify-between items-start border-b border-gray-800 transition-colors ${i.r ? 'bg-orange-500/[0.03]' : ''}`;
-                let calc = i.r && i.b ? `<div class="mt-2 font-mono text-[10px] text-white bg-black/80 p-2.5 rounded border border-gray-700 uppercase tracking-tighter">
+                let calc = i.r && i.b ? `<div class="mt-2 font-mono text-[10px] text-white bg-black/80 p-2.5 rounded border border-gray-700 uppercase tracking-tighter shadow-xl">
                     <span class="text-orange-500 mr-2 font-black">MEMÓRIA DE CÁLCULO:</span> ${i.d > 0 ? '(R$ '+i.br.toLocaleString('pt-BR')+' - R$ '+i.d.toLocaleString('pt-BR')+')' : 'R$ '+i.b.toLocaleString('pt-BR')} x ${i.a}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
                 </div>` : '';
                 div.innerHTML = `<div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1.5"><span class="text-[7px] font-black px-2 py-0.5 rounded ${i.r ? 'bg-orange-600 text-black font-black':'bg-gray-800 text-white'}">${i.r?'RETÉM':'ISENTO'}</span><span class="text-xs font-black text-white uppercase tracking-widest">${i.n}</span></div>
+                    <div class="flex items-center gap-2 mb-1.5"><span class="text-[7px] font-black px-2 py-0.5 rounded shadow-sm ${i.r ? 'bg-orange-600 text-black font-black':'bg-gray-800 text-white'}">${i.r?'RETÉM':'ISENTO'}</span><span class="text-xs font-black text-white uppercase tracking-widest">${i.n}</span></div>
                     <p class="text-[10px] text-white font-bold mb-1 opacity-100 font-medium">${i.f}</p>${calc}
                 </div><span class="text-sm font-bold text-white font-mono ml-4 shrink-0">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>`;
                 container.appendChild(div);
@@ -513,6 +541,15 @@
                 container.appendChild(btn);
             });
         }
+
+        document.getElementById('btnOpenAdmin').onclick = () => { if(prompt("Senha:")===ADMIN_PASS) document.getElementById('adminPanel').classList.remove('hidden-el'); };
+        document.getElementById('btnCloseAdmin').onclick = () => document.getElementById('adminPanel').classList.add('hidden-el');
+        document.getElementById('btnGerarJson').onclick = () => {
+            const c = document.getElementById('adminCod').value; if(!c) return;
+            const obj = { [c]: { desc: document.getElementById('adminDesc').value, iss: document.getElementById('adminISS').checked ? "S" : "N", ir: document.getElementById('adminIR').checked ? 1.5 : 0, inss: document.getElementById('adminINSS').checked ? 11 : 0, pcc: document.getElementById('adminPCC').checked ? 4.65 : 0 } };
+            document.getElementById('adminOutput').value = JSON.stringify(obj, null, 2);
+            document.getElementById('adminOutput').classList.remove('hidden-el');
+        };
 
         init();
     </script>
