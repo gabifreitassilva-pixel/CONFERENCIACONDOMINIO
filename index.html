@@ -617,12 +617,28 @@
             }
             if(!retIR) imps.push({n:'IRRF', r:false, v:0, f:tom==='CONDOMINIO'?'Condomínio não retém IRRF.':'Isento ou Valor < R$ 10.'});
 
-            // PCC
+            // PCC (COM MEMÓRIA DETALHADA)
             const taxPcc = parseFloat(r.pcc) || 0;
-            let retPCC = taxPcc > 0 && state.regime === 'normal' && tom !== 'CONDOMINIO';
+            let retPCC = taxPcc > 0 && state.regime === 'normal';
             if(retPCC) {
                 const aliq = tom === 'ORGAO_PUBLICO' ? 5.85 : 4.65;
-                imps.push({n:'PIS/COFINS/CSLL', r:true, v:round2(vBruto * (aliq/100)), f:'Regra Lei 10.833.', b:vBruto, a:aliq});
+                const totalPcc = round2(vBruto * (aliq/100));
+                let detalheStr = '';
+                
+                if (aliq === 4.65) {
+                    const vPis = round2(vBruto * 0.0065);
+                    const vCofins = round2(vBruto * 0.03);
+                    const vCsll = round2(totalPcc - vPis - vCofins); // Ajuste fino de centavos matemáticos
+                    detalheStr = `<span class="text-gray-400">PIS (0,65%):</span> R$ ${vPis.toLocaleString('pt-BR', {minimumFractionDigits:2})} <span class="text-gray-600 mx-1">|</span> <span class="text-gray-400">COFINS (3%):</span> R$ ${vCofins.toLocaleString('pt-BR', {minimumFractionDigits:2})} <span class="text-gray-600 mx-1">|</span> <span class="text-gray-400">CSLL (1%):</span> R$ ${vCsll.toLocaleString('pt-BR', {minimumFractionDigits:2})} <span class="text-gray-600 mx-1">=</span> <span class="text-white font-black underline decoration-orange-500">TOTAL R$ ${totalPcc.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>`;
+                } else if (aliq === 5.85) {
+                    const vIr = round2(vBruto * 0.012);
+                    const vPis = round2(vBruto * 0.0065);
+                    const vCofins = round2(vBruto * 0.03);
+                    const vCsll = round2(totalPcc - vIr - vPis - vCofins); // Ajuste fino de centavos matemáticos
+                    detalheStr = `<span class="text-gray-400">IR (1,2%):</span> R$ ${vIr.toLocaleString('pt-BR', {minimumFractionDigits:2})} <span class="text-gray-600 mx-1">|</span> <span class="text-gray-400">PIS (0,65%):</span> R$ ${vPis.toLocaleString('pt-BR', {minimumFractionDigits:2})} <span class="text-gray-600 mx-1">|</span> <span class="text-gray-400">COFINS (3%):</span> R$ ${vCofins.toLocaleString('pt-BR', {minimumFractionDigits:2})} <span class="text-gray-600 mx-1">|</span> <span class="text-gray-400">CSLL (1%):</span> R$ ${vCsll.toLocaleString('pt-BR', {minimumFractionDigits:2})} <span class="text-gray-600 mx-1">=</span> <span class="text-white font-black underline decoration-orange-500">TOTAL R$ ${totalPcc.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>`;
+                }
+
+                imps.push({n:'PIS/COFINS/CSLL', r:true, v:totalPcc, f:'Regra Lei 10.833.', b:vBruto, a:aliq, memDetalhada: detalheStr});
             } else imps.push({n:'PIS/COFINS/CSLL', r:false, v:0, f:'Isento ou Dispensado.'});
 
             renderResults(imps);
@@ -648,7 +664,12 @@
                 
                 let calc = '';
                 if(i.r && i.b !== undefined) {
-                    if(i.d > 0) {
+                    if (i.memDetalhada) {
+                        calc = `<div class="mt-3 font-mono text-[10px] text-white bg-black/80 p-3 rounded-lg border border-gray-700 uppercase tracking-tighter shadow-xl">
+                            <div class="text-orange-500 mb-1.5 font-black">MEMÓRIA DE CÁLCULO DETALHADA:</div>
+                            <div class="leading-relaxed">${i.memDetalhada}</div>
+                        </div>`;
+                    } else if(i.d > 0) {
                         calc = `<div class="mt-3 font-mono text-[10px] text-white bg-black/80 p-3 rounded-lg border border-gray-700 uppercase tracking-tighter shadow-xl">
                             <div class="text-yellow-400 mb-2 font-bold border-b border-gray-700/50 pb-2">
                                 1. (BRUTO R$ ${i.br.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})} - DEDUÇÃO R$ ${i.d.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}) = <span class="text-white">BASE R$ ${i.b.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
