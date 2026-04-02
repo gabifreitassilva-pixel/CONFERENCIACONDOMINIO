@@ -20,7 +20,6 @@
         .custom-scroll::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #ff6600; }
         
-        /* Removido o overflow: hidden para permitir a rolagem natural da página */
         html, body { background-color: #050505; color: #ffffff; }
     </style>
 </head>
@@ -123,31 +122,62 @@
                         </div>
                         <div id="containerDeducao" class="opacity-30 pointer-events-none transition-all">
                             <label class="block text-[10px] font-bold text-yellow-500 mb-1.5 uppercase flex justify-between items-center tracking-wider font-black">
-                                Dedução (R$)
-                                <button id="btnToggleSimulador" class="hidden-el text-[8px] bg-yellow-500/10 text-yellow-500 px-1.5 py-0.5 rounded border border-yellow-500/20 hover:bg-yellow-500/20 transition-all font-black">SIMULADOR</button>
+                                <span title="Materiais, Equipamentos, VT, VR e EPI (Conforme discriminado em contrato/NF)">Dedução Legal (R$)</span>
+                                <button id="btnToggleSimulador" class="hidden-el text-[8px] bg-yellow-500/10 text-yellow-500 px-1.5 py-0.5 rounded border border-yellow-500/20 hover:bg-yellow-500/20 transition-all font-black">PAINEL DE DEDUÇÕES</button>
                             </label>
-                            <input type="text" id="valorMaterial" class="w-full bg-[#080808] border border-yellow-500/20 rounded-lg px-3 py-3 text-sm text-white outline-none font-mono font-bold" placeholder="0,00">
+                            <input type="text" id="valorMaterial" class="w-full bg-[#080808] border border-yellow-500/20 focus:border-yellow-500 rounded-lg px-3 py-3 text-sm text-white outline-none font-mono font-bold transition-all" placeholder="0,00">
                         </div>
                     </div>
                     
-                    <!-- SIMULADOR COM ESPAÇO PARA EXPANDIR E EXPLICAÇÃO DA LEI -->
+                    <!-- NOVO: AVISO DE ALÍQUOTA DE ISS ANTES DE EXECUTAR -->
+                    <div id="avisoAlqISS" class="hidden-el mt-2 bg-blue-500/10 border border-blue-500/20 p-3 rounded-xl flex gap-3 items-start shadow-sm slide-in">
+                        <i data-lucide="info" class="text-blue-400 w-5 h-5 shrink-0 mt-0.5"></i>
+                        <span id="textoAvisoAlqISS" class="text-[10px] text-blue-200 font-bold uppercase tracking-wide leading-relaxed"></span>
+                    </div>
+                    
+                    <!-- PAINEL DE DEDUÇÕES EXPANDÍVEL -->
                     <div id="simuladorDeducao" class="hidden-el bg-[#151515] border border-yellow-500/30 rounded-xl p-4 mt-2 slide-in">
-                        <div class="flex items-center gap-2 text-yellow-500 mb-2">
-                            <i data-lucide="scale" class="w-4 h-4"></i>
-                            <h4 class="font-bold text-xs uppercase tracking-widest">Validador de Presunção (IN RFB 2110/22)</h4>
+                        <div class="flex items-center gap-2 text-yellow-500 mb-4 border-b border-yellow-500/20 pb-2">
+                            <i data-lucide="calculator" class="w-4 h-4"></i>
+                            <h4 class="font-bold text-xs uppercase tracking-widest">Painel de Deduções (IN RFB 2110/22)</h4>
                         </div>
-                        <p class="text-[11px] text-gray-400 mb-4 leading-relaxed">
-                            Conforme os <strong>Arts. 117 e 118 da IN RFB 2110/22</strong>, se o prestador não fornecer notas fiscais que comprovem o custo exato do material/equipamento, a lei fixa uma <strong>Base de Cálculo Mínima</strong>, o que nos dá as seguintes presunções de DEDUÇÃO:
-                        </p>
                         
-                        <div id="simuladorBotoes" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                        <!-- Seção 1: Valores Comprovados (Para todos com INSS) -->
+                        <div class="mb-4">
+                            <h5 class="text-[10px] font-bold text-blue-400 uppercase mb-1 flex items-center gap-1.5"><i data-lucide="receipt" class="w-3 h-3"></i> Valores Comprovados (Valores Exatos)</h5>
+                            <p class="text-[9px] text-gray-400 mb-3 leading-relaxed">
+                                Aplicável para fornecimento de Mão de Obra (17.05) e outros. Digite os valores (ex: VT, VR, EPIs) e clique em aplicar.
+                            </p>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <div>
+                                    <label class="block text-[8px] text-gray-400 uppercase mb-1">Vale-Transporte</label>
+                                    <input type="text" id="dedVT" class="ded-input w-full bg-[#080808] border border-gray-700 focus:border-blue-500 rounded-lg px-2 py-2 text-xs text-white outline-none font-mono" placeholder="0,00">
+                                </div>
+                                <div>
+                                    <label class="block text-[8px] text-gray-400 uppercase mb-1">VR / Alimentação</label>
+                                    <input type="text" id="dedVR" class="ded-input w-full bg-[#080808] border border-gray-700 focus:border-blue-500 rounded-lg px-2 py-2 text-xs text-white outline-none font-mono" placeholder="0,00">
+                                </div>
+                                <div>
+                                    <label class="block text-[8px] text-gray-400 uppercase mb-1">EPIs e Uniformes</label>
+                                    <input type="text" id="dedEPI" class="ded-input w-full bg-[#080808] border border-gray-700 focus:border-blue-500 rounded-lg px-2 py-2 text-xs text-white outline-none font-mono" placeholder="0,00">
+                                </div>
+                                <div>
+                                    <label class="block text-[8px] text-gray-400 uppercase mb-1">Outros Materiais</label>
+                                    <input type="text" id="dedMat" class="ded-input w-full bg-[#080808] border border-gray-700 focus:border-blue-500 rounded-lg px-2 py-2 text-xs text-white outline-none font-mono" placeholder="0,00">
+                                </div>
+                            </div>
+                            <button id="btnAplicarComprovados" class="mt-3 w-full bg-blue-600/10 hover:bg-blue-600/30 border border-blue-500/30 text-blue-400 text-[10px] font-black py-2.5 rounded-lg uppercase tracking-widest transition-all">
+                                Somar e Aplicar na Dedução
+                            </button>
+                        </div>
                         
-                        <p id="simuladorAviso" class="text-[10px] text-yellow-500/70 mt-3 text-center italic">
-                            Clique em um botão acima para calcular e aplicar o valor automaticamente no campo de Dedução.
-                        </p>
-                        
-                        <div id="simuladorNaoAplicavel" class="hidden-el bg-[#121212] border border-gray-700 p-3 rounded-lg text-xs text-gray-400 text-center">
-                            A presunção automática não cobre este serviço de forma padrão. Insira o valor exato comprovado em nota fiscal de material/equipamento.
+                        <!-- Seção 2: Presunção Automática -->
+                        <div id="secaoPresuncao" class="hidden-el pt-3 border-t border-gray-800">
+                            <h5 class="text-[10px] font-bold text-yellow-500 uppercase mb-2 flex items-center gap-1.5"><i data-lucide="scale" class="w-3 h-3"></i> Validador de Presunção (Sem NF de Material)</h5>
+                            <p class="text-[9px] text-gray-400 mb-3 leading-relaxed">
+                                Se não houver NF exata do material para serviços com previsão legal (como <b>Obras</b>, <b>Limpeza</b> ou <b>Equipamentos Inerentes</b>), a lei fixa uma Base Mínima. Aplique a dedução automática abaixo:
+                            </p>
+                            <div id="simuladorBotoes" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                         </div>
                     </div>
                     
@@ -207,68 +237,63 @@
 
     <!-- MODAL DE ANÁLISE COMPARATIVA SUPER DETALHADO -->
     <div id="auditModal" class="hidden-el fixed inset-0 z-[100] glass flex items-center justify-center p-4">
-        <div class="bg-[#141414] border border-orange-500/20 rounded-[2.5rem] p-6 md:p-10 max-w-6xl w-full shadow-2xl slide-in max-h-[92vh] flex flex-col overflow-hidden text-white">
+        <div class="bg-[#111111] border border-gray-800 rounded-[2rem] p-6 md:p-8 max-w-6xl w-full shadow-2xl slide-in max-h-[92vh] flex flex-col overflow-hidden text-white">
             
-            <div class="flex items-center justify-between mb-6 border-b border-gray-800 pb-5 shrink-0">
+            <div class="flex items-center justify-between mb-8 border-b border-gray-800/50 pb-5 shrink-0">
                 <div class="flex items-center gap-4">
-                    <div class="bg-orange-500/20 p-3 rounded-full shadow-lg"><i data-lucide="shield-question" class="text-orange-500 w-7 h-7"></i></div>
+                    <div class="bg-[#2a1a10] border border-orange-900/50 p-3 rounded-2xl shadow-lg"><i data-lucide="shield-question" class="text-orange-500 w-7 h-7"></i></div>
                     <div>
                         <h3 class="text-2xl font-black text-white uppercase tracking-tighter">Análise de Enquadramento INSS</h3>
-                        <p class="text-[10px] text-white uppercase font-bold tracking-[0.2em] mt-1 opacity-80">CONFORMIDADE OBRIGATÓRIA IN RFB 2110/2022</p>
+                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-[0.2em] mt-1">CONFORMIDADE OBRIGATÓRIA IN RFB 2110/2022</p>
                     </div>
                 </div>
-                <div id="modalStepText" class="text-[10px] font-black text-orange-500 bg-orange-500/10 px-4 py-2 rounded-full border border-orange-500/20 uppercase tracking-widest shadow-inner">Auditoria Crítica</div>
+                <div id="modalStepText" class="text-[10px] font-black text-orange-500 bg-[#2a1a10] border border-orange-900/30 px-4 py-2 rounded-full uppercase tracking-widest shadow-inner">Auditoria Crítica</div>
             </div>
 
-            <div class="flex-1 overflow-y-auto custom-scroll pr-4">
-                <h4 id="modalQuestion" class="text-2xl md:text-3xl font-black text-white mb-8 text-center leading-tight"></h4>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 text-white font-medium">
-                    <!-- BLOCO SIM (CARACTERIZA RETENÇÃO) -->
-                    <div class="bg-[#1c1c1c] rounded-[2rem] border border-green-500/20 p-8 flex flex-col h-full hover:bg-[#222222] transition-all group shadow-xl">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="bg-green-500/20 p-2.5 rounded-xl border border-green-500/30"><i data-lucide="check-circle" class="text-green-500 w-6 h-6"></i></div>
-                            <span class="text-xl font-black text-green-500 uppercase tracking-widest decoration-green-500/30 underline-offset-8 underline">SIM, HÁ RETENÇÃO</span>
+            <div class="flex-1 overflow-y-auto custom-scroll pr-2">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-2 text-white font-medium">
+                    
+                    <!-- COLUNA SIM -->
+                    <div class="flex flex-col gap-4">
+                        <div class="bg-[#181818] rounded-[1.5rem] border border-green-500/20 p-6 md:p-8 flex flex-col h-full shadow-xl">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="bg-green-500/10 p-2 rounded-full border border-green-500/20"><i data-lucide="check-circle" class="text-green-500 w-6 h-6"></i></div>
+                                <span class="text-xl font-black text-green-500 uppercase tracking-widest">SIM, HÁ RETENÇÃO</span>
+                            </div>
+                            <div id="modalDetailSim" class="text-[13px] md:text-sm text-gray-300 leading-relaxed flex-1 font-medium">
+                                <!-- Inserido via JS -->
+                            </div>
+                            <div class="mt-6 pt-5 border-t border-gray-800/50 flex items-center gap-2 text-[10px] font-black text-green-500 uppercase tracking-widest">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i> DESCONTO DE 11% DE INSS DEVERÁ SER APLICADO
+                            </div>
                         </div>
-                        <div id="modalDetailSim" class="text-[13px] md:text-sm text-white leading-relaxed flex-1 font-medium">
-                            <!-- Inserido via JS -->
-                        </div>
-                        <div class="mt-6 pt-5 border-t border-gray-800 flex items-center gap-2 text-[10px] font-black text-green-500 uppercase tracking-widest">
-                            <i data-lucide="shield-check" class="w-4 h-4"></i> DESCONTO DE 11% DE INSS DEVERÁ SER APLICADO
-                        </div>
+                        <button onclick="answerModal(true)" class="group bg-[#1ab854] hover:bg-green-500 text-[#050505] font-black py-5 md:py-6 rounded-[1.5rem] transition-all uppercase text-sm md:text-base tracking-widest shadow-lg flex flex-col items-center justify-center text-center">
+                            <span>SIM, RETER IMPOSTO</span>
+                            <span class="text-[9px] md:text-[10px] opacity-80 font-bold uppercase tracking-widest mt-1.5">(Aplicar desconto de 11% INSS)</span>
+                        </button>
                     </div>
 
-                    <!-- BLOCO NÃO (DISPENSA RETENÇÃO) -->
-                    <div class="bg-[#1c1c1c] rounded-[2rem] border border-red-500/20 p-8 flex flex-col h-full hover:bg-[#222222] transition-all group shadow-xl">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="bg-red-500/20 p-2.5 rounded-xl border border-red-500/30"><i data-lucide="x-circle" class="text-red-500 w-6 h-6"></i></div>
-                            <span class="text-xl font-black text-red-500 uppercase tracking-widest decoration-red-500/30 underline-offset-8 underline">NÃO, É ISENTO</span>
+                    <!-- COLUNA NÃO -->
+                    <div class="flex flex-col gap-4">
+                        <div class="bg-[#181818] rounded-[1.5rem] border border-red-500/20 p-6 md:p-8 flex flex-col h-full shadow-xl">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="bg-red-500/10 p-2 rounded-full border border-red-500/20"><i data-lucide="x-circle" class="text-red-500 w-6 h-6"></i></div>
+                                <span class="text-xl font-black text-red-500 uppercase tracking-widest">NÃO, É ISENTO</span>
+                            </div>
+                            <div id="modalDetailNao" class="text-[13px] md:text-sm text-gray-300 leading-relaxed flex-1 font-medium">
+                                <!-- Inserido via JS -->
+                            </div>
+                            <div class="mt-6 pt-5 border-t border-gray-800/50 flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-widest">
+                                <i data-lucide="shield-alert" class="w-4 h-4"></i> VALOR DA NOTA SERÁ PAGO INTEGRALMENTE
+                            </div>
                         </div>
-                        <div id="modalDetailNao" class="text-[13px] md:text-sm text-white leading-relaxed flex-1 font-medium">
-                            <!-- Inserido via JS -->
-                        </div>
-                        <div class="mt-6 pt-5 border-t border-gray-800 flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-widest">
-                            <i data-lucide="shield-alert" class="w-4 h-4"></i> VALOR DA NOTA SERÁ PAGO INTEGRALMENTE
-                        </div>
+                        <button onclick="answerModal(false)" class="group bg-[#12141d] text-gray-300 border border-[#2a2c35] font-black py-5 md:py-6 rounded-[1.5rem] hover:bg-red-600 hover:text-white hover:border-red-500 transition-all uppercase text-sm md:text-base tracking-widest shadow-lg flex flex-col items-center justify-center text-center">
+                            <span>NÃO, DISPENSAR</span>
+                            <span class="text-[9px] md:text-[10px] opacity-50 group-hover:opacity-100 font-bold uppercase tracking-widest mt-1.5">(Isentar retenção de INSS)</span>
+                        </button>
                     </div>
-                </div>
 
-                <div class="bg-blue-500/10 border border-blue-500/20 p-5 rounded-[1.5rem] mb-6 flex gap-5 items-center shadow-lg">
-                    <div class="p-3 bg-blue-500/20 rounded-full border border-blue-500/30 hidden md:block"><i data-lucide="info" class="text-blue-400 w-6 h-6"></i></div>
-                    <p id="modalTip" class="text-xs text-blue-100 leading-relaxed font-bold"></p>
                 </div>
-            </div>
-
-            <!-- BOTÕES -->
-            <div class="grid grid-cols-2 gap-4 md:gap-8 pt-6 border-t border-gray-800 shrink-0">
-                <button onclick="answerModal(true)" class="group bg-green-600 text-white font-black py-5 md:py-7 rounded-[2rem] hover:bg-green-500 transition-all uppercase text-xs md:text-sm tracking-widest shadow-2xl flex flex-col items-center justify-center text-center px-2">
-                    <span>SIM, RETER IMPOSTO</span>
-                    <span class="text-[9px] md:text-[10px] opacity-70 font-bold group-hover:opacity-100 uppercase tracking-tighter mt-1">(Aplicar desconto de 11% INSS)</span>
-                </button>
-                <button onclick="answerModal(false)" class="group bg-gray-900 text-white border border-gray-700 font-black py-5 md:py-7 rounded-[2rem] hover:bg-red-600 hover:text-white hover:border-red-600 transition-all uppercase text-xs md:text-sm tracking-widest shadow-2xl flex flex-col items-center justify-center text-center px-2">
-                    <span>NÃO, DISPENSAR</span>
-                    <span class="text-[9px] md:text-[10px] opacity-70 font-bold group-hover:opacity-100 uppercase tracking-tighter mt-1">(Isentar retenção de INSS)</span>
-                </button>
             </div>
         </div>
     </div>
@@ -312,12 +337,13 @@
     <script>
         const GIST_ID = "969b06493ae7642340b3ba741e18959a";
         const ADMIN_PASS = "05583070";
-        const permitidosDeducao = ["07.02", "07.05", "07.10", "07.11", "11.02", "14.01"];
+        const permitidosPresuncao = ["07.02", "07.05", "07.10", "07.11", "11.02", "14.01", "17.05"];
 
         let REGRAS_DATA = {};
         let state = {
             regime: 'normal', municipio: '', valorTotal: 0, valorMaterial: 0,
-            respostas: {}, modalPerguntas: [], reterInssConfirmado: false
+            respostas: {}, modalPerguntas: [], reterInssConfirmado: false,
+            basePerc: 100, deducaoExata: 0
         };
 
         async function init() {
@@ -388,6 +414,7 @@
                         elR.textContent = state.regime.toUpperCase();
                         elR.className = `text-[8px] font-black uppercase px-2 py-0.5 rounded border ${state.regime === 'simples' ? 'border-green-500/50 text-green-500' : 'border-orange-500/50 text-orange-500'}`;
                         document.getElementById('razaoSocialContainer').classList.remove('hidden-el');
+                        atualizarAvisoISS();
                     }
                 } catch(e) {}
                 btn.innerHTML = `<i data-lucide="search" class="w-4 h-4"></i>`; lucide.createIcons();
@@ -420,26 +447,23 @@
                 if(rawInss > 0) {
                     const isObra = cod.startsWith('07');
                     const instrucao = isObra ? {
-                        q: "A obra foi executada mediante EMPREITADA PARCIAL ou SUBEMPREITADA?",
                         sim: `
-                            <p class="mb-3 text-gray-300">A <b>Empreitada Parcial</b> ou <b>Subempreitada</b> obriga a retenção de 11% de INSS. Ocorre quando:</p>
+                            <p class="mb-3 text-gray-200 font-medium">A <b>Empreitada Parcial</b> ou <b>Subempreitada</b> obriga a retenção de 11% de INSS. Ocorre quando:</p>
                             <ul class="list-disc pl-5 space-y-2 text-gray-400">
                                 <li><b>Contratação Fragmentada:</b> Você contratou a empresa para uma fase da obra (ex: fundação, pintura).</li>
                                 <li><b>Matrícula CNO (Tomador):</b> A matrícula da obra no INSS está no seu nome ou da sua empresa.</li>
                             </ul>
                         `,
                         nao: `
-                            <p class="mb-3 text-gray-300">A <b>Empreitada Total</b> isenta o tomador do recolhimento de INSS. Ocorre APENAS se:</p>
+                            <p class="mb-3 text-gray-200 font-medium">A <b>Empreitada Total</b> isenta o tomador do recolhimento de INSS. Ocorre APENAS se:</p>
                             <ul class="list-disc pl-5 space-y-2 text-gray-400">
                                 <li><b>Contrato Global:</b> O prestador assumiu a execução de <b>TODA</b> a obra.</li>
                                 <li><b>Matrícula CNO (Prestador):</b> O prestador abriu a matrícula no INSS no próprio nome dele.</li>
                             </ul>
-                        `,
-                        tip: "Na construção civil, a retenção de INSS é regra geral. Só há isenção se provada Empreitada TOTAL com CNO do prestador."
+                        `
                     } : {
-                        q: "O serviço foi prestado mediante CESSÃO DE MÃO DE OBRA?",
                         sim: `
-                            <p class="mb-3 text-gray-300">A <b>Cessão de Mão de Obra</b> obriga a retenção de 11%. Ocorre quando os 3 requisitos são verdadeiros:</p>
+                            <p class="mb-3 text-gray-200 font-medium">A <b>Cessão de Mão de Obra</b> obriga a retenção de 11%. Ocorre quando os 3 requisitos são verdadeiros:</p>
                             <ul class="list-disc pl-5 space-y-2 text-gray-400">
                                 <li><b>Disposição:</b> Os trabalhadores ficam submetidos à sua coordenação (você diz o que vão fazer).</li>
                                 <li><b>Dependências:</b> O serviço é executado nas suas instalações.</li>
@@ -447,17 +471,16 @@
                             </ul>
                         `,
                         nao: `
-                            <p class="mb-3 text-gray-300">O <b>Serviço Eventual ou Isolado</b> não retém 11% de INSS. Ocorre quando:</p>
+                            <p class="mb-3 text-gray-200 font-medium">O <b>Serviço Eventual ou Isolado</b> não retém 11% de INSS. Ocorre quando:</p>
                             <ul class="list-disc pl-5 space-y-2 text-gray-400">
                                 <li><b>Trabalho Pontual:</b> O prestador faz uma tarefa específica e vai embora.</li>
                                 <li><b>Autonomia Total:</b> O prestador decide como e quando fazer o serviço.</li>
                                 <li><b>Foco no Produto:</b> A contratação visa uma entrega final (ex: máquina consertada).</li>
                             </ul>
-                        `,
-                        tip: "A retenção exige a permanência e subordinação da equipe (Cessão de Mão de Obra). Conserto pontual é isento."
+                        `
                     };
 
-                    state.modalPerguntas = [{ id: 'inss_trigger', texto: instrucao.q, sim: instrucao.sim, nao: instrucao.nao, tip: instrucao.tip }];
+                    state.modalPerguntas = [{ sim: instrucao.sim, nao: instrucao.nao }];
                     renderModal();
                     document.getElementById('auditModal').classList.remove('hidden-el');
                 } else {
@@ -471,23 +494,84 @@
             document.getElementById('codigoServico').onchange = () => {
                 const cod = document.getElementById('codigoServico').value;
                 const r = REGRAS_DATA[cod];
-                const permiteD = permitidosDeducao.includes(cod);
+                const temINSS = r && parseFloat(r.inss) > 0;
+                
                 document.getElementById('containerAliqISS').classList.toggle('opacity-30', (r.iss || "").toString().trim() !== "S");
                 document.getElementById('containerAliqISS').classList.toggle('pointer-events-none', (r.iss || "").toString().trim() !== "S");
                 document.getElementById('aliqISS').disabled = ((r.iss || "").toString().trim() !== "S");
-                document.getElementById('containerDeducao').classList.toggle('opacity-30', !permiteD);
-                document.getElementById('containerDeducao').classList.toggle('pointer-events-none', !permiteD);
-                document.getElementById('btnToggleSimulador').classList.toggle('hidden-el', !permiteD);
+                
+                // Libera a dedução principal para QUALQUER serviço com INSS
+                document.getElementById('containerDeducao').classList.toggle('opacity-30', !temINSS);
+                document.getElementById('containerDeducao').classList.toggle('pointer-events-none', !temINSS);
+                
+                // O PAINEL DE DEDUÇÕES agora aparece para qualquer código com INSS
+                document.getElementById('btnToggleSimulador').classList.toggle('hidden-el', !temINSS);
+                
                 renderSimulador(cod);
+                atualizarAvisoISS();
             };
+            
+            // Função que executa a união dos percentuais com os valores exatos digitados
+            const aplicarCalculosDeducoes = () => {
+                const getNumber = (id) => {
+                    let v = document.getElementById(id).value.replace(/\D/g, '');
+                    return v ? parseFloat(v) / 100 : 0;
+                };
+                
+                state.deducaoExata = getNumber('dedVT') + getNumber('dedVR') + getNumber('dedEPI') + getNumber('dedMat');
+                
+                // Acha a base que sobrou do percentual presuntivo
+                let basePresumida = Math.round(state.valorTotal * (state.basePerc / 100) * 100) / 100;
+                
+                // Da base que sobrou, tiramos os descontos exatos que ele conseguiu comprovar
+                let baseFinal = basePresumida - state.deducaoExata;
+                if (baseFinal < 0) baseFinal = 0;
+                
+                // O valor final do campo Dedução Total (R$) é o que você deixou de pagar
+                state.valorMaterial = Math.round((state.valorTotal - baseFinal) * 100) / 100;
+                
+                const mainInput = document.getElementById('valorMaterial');
+                mainInput.value = state.valorMaterial.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+                
+                // Efeito visual de confirmação no input principal
+                mainInput.classList.remove('border-yellow-500', 'bg-yellow-500/20');
+                mainInput.classList.add('border-blue-500', 'bg-blue-500/20');
+                setTimeout(() => {
+                    mainInput.classList.remove('border-blue-500', 'bg-blue-500/20');
+                }, 600);
+            };
+
+            // Botão de somar as deduções exatas
+            document.getElementById('btnAplicarComprovados').onclick = () => {
+                aplicarCalculosDeducoes();
+            };
+            
+            // Expõe a função para os botões gerados dinamicamente
+            window.aplicarCalculosDeducoes = aplicarCalculosDeducoes;
+        }
+
+        function atualizarAvisoISS() {
+            const avisoContainer = document.getElementById('avisoAlqISS');
+            const textoAviso = document.getElementById('textoAvisoAlqISS');
+            const cod = document.getElementById('codigoServico').value;
+            const r = cod ? REGRAS_DATA[cod] : null;
+
+            if (r && (r.iss || "").toString().trim() === "S") {
+                if (state.regime === 'simples') {
+                    textoAviso.textContent = "O Prestador é Simples Nacional. Utilize a alíquota informada pela empresa no corpo da nota fiscal. (Se não for informada na nota, a lei obriga reter pela carga máxima de 5%).";
+                } else {
+                    textoAviso.textContent = "O Prestador é de Regime Normal. Utilize a alíquota padrão estipulada pela prefeitura do município do TOMADOR (quem está contratando), que varia de 2% a 5%.";
+                }
+                avisoContainer.classList.remove('hidden-el');
+            } else {
+                avisoContainer.classList.add('hidden-el');
+            }
         }
 
         function renderModal() {
             const q = state.modalPerguntas[0];
-            document.getElementById('modalQuestion').textContent = q.texto;
             document.getElementById('modalDetailSim').innerHTML = q.sim;
             document.getElementById('modalDetailNao').innerHTML = q.nao;
-            document.getElementById('modalTip').textContent = q.tip;
             lucide.createIcons();
         }
 
@@ -500,22 +584,24 @@
         function calcular() {
             const cod = document.getElementById('codigoServico').value;
             const r = REGRAS_DATA[cod];
-            const vBruto = Number(state.valorTotal) || 0;
-            const vDed = Number(state.valorMaterial) || 0;
+            const round2 = (num) => Math.round(num * 100) / 100; // Trava o JS em exatas 2 casas decimais (corte de moeda)
+            
+            const vBruto = round2(Number(state.valorTotal)) || 0;
+            const vDed = round2(Number(state.valorMaterial)) || 0;
             const tom = document.getElementById('tomador').value;
             let imps = [];
             
             // ISS
             if((r.iss || "").toString().trim() === "S") {
                 const aliq = parseFloat(document.getElementById('aliqISS').value) || 0;
-                imps.push({n:'ISS', r:true, v:vBruto * (aliq/100), f:'Retenção Local (LC 116).', b:vBruto, a:aliq});
+                imps.push({n:'ISS', r:true, v:round2(vBruto * (aliq/100)), f:'Retenção Local (LC 116).', b:vBruto, a:aliq});
             } else imps.push({n:'ISS', r:false, v:0, f:'Imposto devido no município do prestador.'});
 
             // INSS
             const taxInss = parseFloat(r.inss) || 0;
             if(taxInss > 0 && state.reterInssConfirmado) {
-                const base = Math.max(0, vBruto - vDed);
-                imps.push({n:'INSS', r:true, v:base * (taxInss/100), f:'Retenção Previdenciária IN 2110.', b:base, a:taxInss, d:vDed, br:vBruto});
+                const base = round2(Math.max(0, vBruto - vDed));
+                imps.push({n:'INSS', r:true, v:round2(base * (taxInss/100)), f:'Retenção Previdenciária IN 2110.', b:base, a:taxInss, d:vDed, br:vBruto});
             } else {
                 let msg = (taxInss === 0) ? 'Serviço não sujeito a INSS.' : 'Dispensado: Falta de requisitos legais de retenção (Não é Cessão de Mão de Obra ou Empreitada Parcial).';
                 imps.push({n:'INSS', r:false, v:0, f:msg});
@@ -525,7 +611,7 @@
             const taxIr = parseFloat(r.ir) || 0;
             let retIR = taxIr > 0 && state.regime === 'normal' && tom === 'PJ';
             if(retIR) {
-                const v = vBruto * (taxIr/100);
+                const v = round2(vBruto * (taxIr/100));
                 if(v < 10) retIR = false;
                 else imps.push({n:'IRRF', r:true, v:v, f:'Art. 714 RIR/2018.', b:vBruto, a:taxIr});
             }
@@ -536,7 +622,7 @@
             let retPCC = taxPcc > 0 && state.regime === 'normal' && tom !== 'CONDOMINIO';
             if(retPCC) {
                 const aliq = tom === 'ORGAO_PUBLICO' ? 5.85 : 4.65;
-                imps.push({n:'PIS/COFINS/CSLL', r:true, v:vBruto * (aliq/100), f:'Regra Lei 10.833.', b:vBruto, a:aliq});
+                imps.push({n:'PIS/COFINS/CSLL', r:true, v:round2(vBruto * (aliq/100)), f:'Regra Lei 10.833.', b:vBruto, a:aliq});
             } else imps.push({n:'PIS/COFINS/CSLL', r:false, v:0, f:'Isento ou Dispensado.'});
 
             renderResults(imps);
@@ -545,10 +631,15 @@
         function renderResults(imps) {
             document.getElementById('waitingState').classList.add('hidden-el');
             document.getElementById('resultsState').classList.remove('hidden-el');
-            const totalRet = imps.reduce((acc, i) => acc + i.v, 0);
-            document.getElementById('resBruto').textContent = "R$ " + state.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2});
-            document.getElementById('resLiquido').textContent = "R$ " + (state.valorTotal - totalRet).toLocaleString('pt-BR', {minimumFractionDigits:2});
-            document.getElementById('resRetido').textContent = "R$ " + totalRet.toLocaleString('pt-BR', {minimumFractionDigits:2});
+            
+            const round2 = (num) => Math.round(num * 100) / 100;
+            const totalRet = round2(imps.reduce((acc, i) => acc + i.v, 0));
+            const liquido = round2(state.valorTotal - totalRet);
+            
+            document.getElementById('resBruto').textContent = "R$ " + state.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('resLiquido').textContent = "R$ " + liquido.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('resRetido').textContent = "R$ " + totalRet.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+            
             const container = document.getElementById('taxesContainer');
             container.innerHTML = '';
             imps.forEach(i => {
@@ -560,15 +651,15 @@
                     if(i.d > 0) {
                         calc = `<div class="mt-3 font-mono text-[10px] text-white bg-black/80 p-3 rounded-lg border border-gray-700 uppercase tracking-tighter shadow-xl">
                             <div class="text-yellow-400 mb-2 font-bold border-b border-gray-700/50 pb-2">
-                                1. (BRUTO R$ ${i.br.toLocaleString('pt-BR', {minimumFractionDigits:2})} - DEDUÇÃO R$ ${i.d.toLocaleString('pt-BR', {minimumFractionDigits:2})}) = <span class="text-white">BASE R$ ${i.b.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                                1. (BRUTO R$ ${i.br.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})} - DEDUÇÃO R$ ${i.d.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}) = <span class="text-white">BASE R$ ${i.b.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                             </div>
                             <div>
-                                <span class="text-orange-500 mr-2 font-black">2. MEMÓRIA DE CÁLCULO:</span> BASE R$ ${i.b.toLocaleString('pt-BR', {minimumFractionDigits:2})} x ${i.a.toLocaleString('pt-BR', {minimumFractionDigits:2})}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                                <span class="text-orange-500 mr-2 font-black">2. MEMÓRIA DE CÁLCULO:</span> BASE R$ ${i.b.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})} x ${i.a.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                             </div>
                         </div>`;
                     } else {
                         calc = `<div class="mt-3 font-mono text-[10px] text-white bg-black/80 p-3 rounded-lg border border-gray-700 uppercase tracking-tighter shadow-xl">
-                            <span class="text-orange-500 mr-2 font-black">MEMÓRIA DE CÁLCULO:</span> R$ ${i.b.toLocaleString('pt-BR', {minimumFractionDigits:2})} x ${i.a.toLocaleString('pt-BR', {minimumFractionDigits:2})}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                            <span class="text-orange-500 mr-2 font-black">MEMÓRIA DE CÁLCULO:</span> R$ ${i.b.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})} x ${i.a.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}% = <span class="text-white font-black underline decoration-orange-500">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                         </div>`;
                     }
                 }
@@ -576,7 +667,7 @@
                 div.innerHTML = `<div class="flex-1">
                     <div class="flex items-center gap-2 mb-1.5"><span class="text-[8px] font-black px-2 py-0.5 rounded shadow-sm ${i.r ? 'bg-orange-600 text-black font-black':'bg-gray-800 text-white'}">${i.r?'RETÉM':'ISENTO'}</span><span class="text-xs font-black text-white uppercase tracking-widest">${i.n}</span></div>
                     <p class="text-[11px] text-white font-bold mb-1 opacity-100 font-medium">${i.f}</p>${calc}
-                </div><span class="text-sm font-bold text-white font-mono ml-4 shrink-0">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>`;
+                </div><span class="text-sm font-bold text-white font-mono ml-4 shrink-0">R$ ${i.v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>`;
                 container.appendChild(div);
             });
             lucide.createIcons();
@@ -585,61 +676,71 @@
         function setupMasks() {
             const setup = (id, key) => {
                 const el = document.getElementById(id);
+                if(!el) return;
                 el.addEventListener('input', (e) => {
                     let v = e.target.value.replace(/\D/g, '');
-                    if(!v) { state[key] = 0; el.value = ''; return; }
-                    state[key] = parseFloat(v) / 100;
-                    el.value = state[key].toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    if(!v) { 
+                        if(key) state[key] = 0; 
+                        if(key === 'valorMaterial') { state.basePerc = 100; state.deducaoExata = 0; }
+                        el.value = ''; 
+                        return; 
+                    }
+                    let val = parseFloat(v) / 100;
+                    if(key) state[key] = val;
+                    if(key === 'valorMaterial') { state.basePerc = 100; state.deducaoExata = 0; }
+                    el.value = val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 });
             };
-            setup('valorTotal', 'valorTotal'); setup('valorMaterial', 'valorMaterial');
+            setup('valorTotal', 'valorTotal'); 
+            setup('valorMaterial', 'valorMaterial');
+            // Máscaras para as deduções exatas no painel
+            setup('dedVT', null); setup('dedVR', null); setup('dedEPI', null); setup('dedMat', null);
         }
 
         function renderSimulador(cod) {
-            const container = document.getElementById('simuladorBotoes');
-            const aviso = document.getElementById('simuladorAviso');
-            const naoAplicavel = document.getElementById('simuladorNaoAplicavel');
+            const containerBotoes = document.getElementById('simuladorBotoes');
+            const secaoPresuncao = document.getElementById('secaoPresuncao');
             
-            container.innerHTML = ''; 
+            containerBotoes.innerHTML = ''; 
             let bts = [];
             
-            if(cod === '14.01') {
+            // Lógica ajustada: O percentual mostra primeiro a BASE (Multiplicador do Bruto)
+            if(cod === '14.01' || cod === '17.05') {
                 bts = [
-                    {p:80, l:'Limpeza Comum', b:'Base 20%'}, 
-                    {p:35, l:'Hospitais', b:'Base 65%'},
-                    {p:55, l:'C/ Equipamentos', b:'Base 45%'}
+                    {base: 80, l:'Limpeza Comum', d:'Dedução 20%'}, 
+                    {base: 35, l:'Hospitais', d:'Dedução 65%'},
+                    {base: 55, l:'C/ Equipamentos', d:'Dedução 45%'}
                 ];
             } else if(cod && cod.startsWith('07')) {
                 bts = [
-                    {p:50, l:'Obras em Geral', b:'Base 50%'}, 
-                    {p:55, l:'Obras de Arte', b:'Base 45%'},
-                    {p:85, l:'Terraplenagem', b:'Base 15%'},
-                    {p:90, l:'Pavimentação', b:'Base 10%'}
+                    {base: 50, l:'Obras em Geral', d:'Dedução 50%'}, 
+                    {base: 45, l:'Obras de Arte', d:'Dedução 55%'},
+                    {base: 15, l:'Terraplenagem', d:'Dedução 85%'},
+                    {base: 10, l:'Pavimentação', d:'Dedução 90%'}
+                ];
+            } else if(cod === '11.02') {
+                bts = [
+                    {base: 50, l:'Uso de Equipamento Inerente', d:'Dedução 50%'}
                 ];
             }
             
             if(bts.length > 0) {
-                container.classList.remove('hidden-el');
-                aviso.classList.remove('hidden-el');
-                naoAplicavel.classList.add('hidden-el');
-                
+                secaoPresuncao.classList.remove('hidden-el');
                 bts.forEach(b => {
                     const btn = document.createElement('button');
                     btn.className = "bg-[#121212] border border-gray-700 hover:border-yellow-500 text-left p-2.5 rounded-lg group transition-colors";
                     btn.innerHTML = `
-                        <span class="block text-[11px] font-bold text-gray-200 group-hover:text-yellow-500">Dedução: ${b.p}%</span>
-                        <span class="block text-[9px] text-gray-500 mt-0.5">${b.b} - ${b.l}</span>
+                        <span class="block text-[11px] font-bold text-gray-200 group-hover:text-yellow-500">Base: ${b.base}%</span>
+                        <span class="block text-[9px] text-gray-500 mt-0.5">${b.d} - ${b.l}</span>
                     `;
                     btn.onclick = () => {
-                        state.valorMaterial = state.valorTotal * (b.p/100);
-                        document.getElementById('valorMaterial').value = state.valorMaterial.toLocaleString('pt-BR', {minimumFractionDigits:2});
+                        state.basePerc = b.base; // Registra qual foi a presunção escolhida e acumula tudo
+                        window.aplicarCalculosDeducoes();
                     };
-                    container.appendChild(btn);
+                    containerBotoes.appendChild(btn);
                 });
             } else {
-                container.classList.add('hidden-el');
-                aviso.classList.add('hidden-el');
-                naoAplicavel.classList.remove('hidden-el');
+                secaoPresuncao.classList.add('hidden-el');
             }
             lucide.createIcons();
         }
